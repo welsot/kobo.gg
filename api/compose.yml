@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
       POSTGRES_USER: ${POSTGRES_USER:-kobogg_user}
     volumes:
-      - ./volumes/db:/var/lib/postgresql/data:rw
+      - kobogg_db_volume:/var/lib/postgresql/data:rw
     ports:
       - "15432:5432"
   mailer:
@@ -14,3 +14,5 @@ services:
     ports:
       - "1080:1080"
       - "1025:1025"
+volumes:
+  kobogg_db_volume:
