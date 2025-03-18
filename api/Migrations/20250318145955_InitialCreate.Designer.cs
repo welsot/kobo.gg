@@ -12,7 +12,7 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250318143400_InitialCreate")]
+    [Migration("20250318145955_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -45,12 +45,14 @@ namespace api.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_email_verified");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
 
-                    b.ToTable("users");
+                    b.ToTable("users", (string)null);
                 });
 #pragma warning restore 612, 618
         }

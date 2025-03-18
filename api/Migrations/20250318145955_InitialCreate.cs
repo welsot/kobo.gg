@@ -22,11 +22,11 @@ namespace api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_users", x => x.id);
+                    table.PrimaryKey("pk_users", x => x.id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_email",
+                name: "ix_users_email",
                 table: "users",
                 column: "email",
                 unique: true);
