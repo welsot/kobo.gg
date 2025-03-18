@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace api.KoboTests;
+﻿namespace api.Tests;
 
 public class UnitTest1
 {
