@@ -1,4 +1,4 @@
-using api.Models;
+using api.Modules.User.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Data;
