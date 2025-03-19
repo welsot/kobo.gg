@@ -10,7 +10,9 @@ public class ApplicationDbContext : DbContext
     {
     }
     
-    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<User> Users { get; set; }
+
+    public DbSet<ApiToken> ApiTokens { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

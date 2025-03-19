@@ -8,23 +8,22 @@ public class User
 {
     [Key]
     [Column]
-    public Guid Id { get; set; }
-    
+    public Guid Id { get; }
+
     private string _email = string.Empty;
-    
-    [Required]
+
     [Column]
     public string Email 
     {
         get => _email;
-        set => _email = value.ToLowerInvariant();
+        private set => _email = value.ToLowerInvariant();
     }
     
     [Column]
     public bool IsEmailVerified { get; set; } = false;
     
     [Column]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     
     public User(Guid id, string email)
     {
