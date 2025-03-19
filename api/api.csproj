@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,7 +21,6 @@
     <ItemGroup>
       <Folder Include="Migrations\" />
       <Folder Include="Modules\User\" />
-      <Folder Include="Tests\" />
     </ItemGroup>
 
 </Project>
