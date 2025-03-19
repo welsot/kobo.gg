@@ -10,8 +10,7 @@ public class RazorViewRenderer : IRazorViewRenderer
     public RazorViewRenderer()
     {
         _engine = new RazorLightEngineBuilder()
-            .UseEmbeddedResourcesProject(Assembly.GetEntryAssembly())
-            .UseFileSystemProject(Path.Combine(Directory.GetCurrentDirectory(), "Resources"))
+            .UseEmbeddedResourcesProject(Assembly.GetAssembly(typeof(RazorViewRenderer)))
             .UseMemoryCachingProvider()
             .Build();
     }

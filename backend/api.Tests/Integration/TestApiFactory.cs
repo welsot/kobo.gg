@@ -1,5 +1,8 @@
 using System.Data.Common;
 using api.Data;
+using api.Modules.Email.Config;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -17,6 +20,8 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private Respawner _respawner = null!;
     private DbConnection _connection = null!;
 
+    private readonly IContainer _smtpContainer;
+
     public TestApiFactory()
     {
         _dbContainer = new PostgreSqlBuilder()
@@ -25,11 +30,18 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             .WithUsername("postgres")
             .WithPassword("postgres")
             .Build();
+        
+        _smtpContainer = new ContainerBuilder()
+            .WithImage("schickling/mailcatcher")
+            .WithPortBinding(1025)
+            .WithPortBinding(1080)
+            .Build();
     }
 
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+        await _smtpContainer.StartAsync();
 
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -69,11 +81,18 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(_dbContainer.GetConnectionString())
                     .UseSnakeCaseNamingConvention());
+            
+            services.Configure<MailcatcherSettings>(settings =>
+            {
+                settings.Host = _smtpContainer.Hostname;
+                settings.Port = _smtpContainer.GetMappedPublicPort(1025);
+            });
         });
     }
 
     async Task IAsyncLifetime.DisposeAsync()
     {
+        await _smtpContainer.StopAsync();
         await _dbContainer.StopAsync();
         _connection?.Dispose();
         await base.DisposeAsync();

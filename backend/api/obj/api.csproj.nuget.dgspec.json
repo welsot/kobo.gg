@@ -75,6 +75,10 @@
             "RazorLight": {
               "target": "Package",
               "version": "[2.3.1, )"
+            },
+            "Testcontainers": {
+              "target": "Package",
+              "version": "[4.3.0, )"
             }
           },
           "imports": [
