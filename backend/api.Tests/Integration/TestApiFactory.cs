@@ -50,7 +50,6 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             DbAdapter = DbAdapter.Postgres,
             SchemasToInclude = new[] { "public" },
             WithReseed = true,
-            TablesToIgnore = Array.Empty<string>() // Make sure no tables are ignored
         };
         
         // Initialize database first to ensure tables exist
