@@ -1,21 +1,19 @@
 using System.Data.Common;
-using api;
 using api.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
-using Xunit;
 
 namespace api.Tests.Integration;
 
 public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _dbContainer;
-    private RespawnerOptions _respawnerOptions = null!;
     private Respawner _respawner = null!;
     private DbConnection _connection = null!;
 
@@ -23,7 +21,7 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         _dbContainer = new PostgreSqlBuilder()
             .WithImage("postgres:17")
-            .WithDatabase("kobogg_test_db")
+            .WithDatabase("test_db")
             .WithUsername("postgres")
             .WithPassword("postgres")
             .Build();
@@ -32,14 +30,14 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
-    
+
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await db.Database.MigrateAsync();
-    
+
         _connection = CreateDbConnection();
-        _respawner = await Respawner.CreateAsync(_connection, new() 
-        { 
+        _respawner = await Respawner.CreateAsync(_connection, new()
+        {
             DbAdapter = DbAdapter.Postgres,
             SchemasToInclude = ["public"]
         });
@@ -47,27 +45,9 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private DbConnection CreateDbConnection()
     {
-        var connection = new Npgsql.NpgsqlConnection(_dbContainer.GetConnectionString());
+        var connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         connection.Open();
         return connection;
-    }
-
-    private async Task InitializeRespawner()
-    {
-        _respawnerOptions = new RespawnerOptions
-        {
-            DbAdapter = DbAdapter.Postgres,
-            SchemasToInclude = new[] { "public" },
-            WithReseed = true,
-        };
-        
-        // Initialize database first to ensure tables exist
-        using var scope = Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await db.Database.EnsureCreatedAsync();
-        //await db.Database.MigrateAsync(); // if this is uncommented i get: Npgsql.PostgresException 42P07: relation "users" already exists
-        
-        _respawner = await Respawner.CreateAsync(_connection, _respawnerOptions);
     }
 
     public async Task ResetDatabaseAsync()
@@ -79,10 +59,13 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         builder.ConfigureTestServices(services =>
         {
-            var descriptor = services.SingleOrDefault(d => 
+            var descriptor = services.SingleOrDefault(d =>
                 d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-            services.Remove(descriptor);
-        
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(_dbContainer.GetConnectionString())
                     .UseSnakeCaseNamingConvention());
