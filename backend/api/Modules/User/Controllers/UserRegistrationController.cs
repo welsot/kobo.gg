@@ -1,23 +1,18 @@
-using api.Data;
+using api.Modules.Common.Data;
 using api.Modules.Common.DTO;
 using api.Modules.User.DTOs;
+using api.Modules.User.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.Modules.User.Controllers;
 
 [ApiController]
-public class UserRegistrationController : ControllerBase
+public class UserRegistrationController(
+    Db db,
+    ILogger<UserRegistrationController> logger,
+    IUserRepository users
+) : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    private readonly ILogger<UserRegistrationController> _logger;
-
-    public UserRegistrationController(ApplicationDbContext context, ILogger<UserRegistrationController> logger)
-    {
-        _context = context;
-        _logger = logger;
-    }
-
     [ProducesResponseType(typeof(GuidResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
@@ -33,7 +28,7 @@ public class UserRegistrationController : ControllerBase
         try
         {
             // Check if email already exists
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == registrationDto.Email);
+            var existingUser = await users.FindByEmailAsync(registrationDto.Email);
             if (existingUser != null)
             {
                 return Conflict(new ErrorResponse("already_registered"));
@@ -42,14 +37,14 @@ public class UserRegistrationController : ControllerBase
             // Create new user
             var user = new Models.User(Guid.NewGuid(), registrationDto.Email);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            users.Add(user);
+            await db.SaveChangesAsync();
 
             return StatusCode(StatusCodes.Status201Created, new GuidResponse(user.Id));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error registering user");
+            logger.LogError(ex, "Error registering user");
             return StatusCode(500, new ErrorResponse("unexpected_server_error"));
         }
     }

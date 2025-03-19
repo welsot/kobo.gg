@@ -14,10 +14,14 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
-        
+
         // Configure the database context
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        // Modules
+        builder.Services.AddCommonServices();
+        builder.Services.AddUserServices();
 
         var app = builder.Build();
 

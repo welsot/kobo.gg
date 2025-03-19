@@ -24,7 +24,10 @@
 
     <ItemGroup>
         <Folder Include="Migrations\" />
-        <Folder Include="Modules\User\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include=".config\dotnet-tools.json" />
     </ItemGroup>
 
 </Project>
