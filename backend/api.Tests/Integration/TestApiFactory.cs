@@ -48,8 +48,16 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         _respawnerOptions = new RespawnerOptions
         {
             DbAdapter = DbAdapter.Postgres,
-            SchemasToInclude = new[] { "public" }
+            SchemasToInclude = new[] { "public" },
+            WithReseed = true,
+            TablesToIgnore = Array.Empty<string>() // Make sure no tables are ignored
         };
+        
+        // Initialize database first to ensure tables exist
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.EnsureCreatedAsync();
+        await db.Database.MigrateAsync();
         
         _respawner = await Respawner.CreateAsync(_connection, _respawnerOptions);
     }
@@ -73,13 +81,20 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(_dbContainer.GetConnectionString());
+                options.UseNpgsql(_dbContainer.GetConnectionString())
+                      .UseSnakeCaseNamingConvention(); // Add this to match your app configuration
             });
             
             // Ensure database is created and migrated
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            
+            // Create the database and ensure it's clean
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+            
+            // Apply migrations
             db.Database.Migrate();
         });
     }
