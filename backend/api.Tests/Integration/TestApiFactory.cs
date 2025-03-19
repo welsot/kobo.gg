@@ -56,7 +56,7 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await db.Database.EnsureCreatedAsync();
-        await db.Database.MigrateAsync();
+        //await db.Database.MigrateAsync(); // if this is uncommented i get: Npgsql.PostgresException 42P07: relation "users" already exists
         
         _respawner = await Respawner.CreateAsync(_connection, _respawnerOptions);
     }
@@ -81,7 +81,7 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(_dbContainer.GetConnectionString())
-                      .UseSnakeCaseNamingConvention(); // Add this to match your app configuration
+                      .UseSnakeCaseNamingConvention();
             });
             
             // Ensure database is created and migrated
@@ -91,10 +91,10 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             
             // Create the database and ensure it's clean
             db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
+            //db.Database.EnsureCreated();
             
             // Apply migrations
-            db.Database.Migrate();
+            //db.Database.Migrate();
         });
     }
 
