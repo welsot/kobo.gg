@@ -32,7 +32,7 @@ public abstract class ApiTestBase : IClassFixture<TestApiFactory>, IAsyncLifetim
         return await Client.PostAsJsonAsync(url, data);
     }
 
-    protected async Task<ApplicationDbContext> CreateDbContextAsync()
+    protected ApplicationDbContext CreateDbContext()
     {
         var scope = Factory.Services.CreateScope();
         return scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
