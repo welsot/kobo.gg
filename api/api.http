@@ -1,6 +1,0 @@
-@url = http://localhost:8080
-
-GET {{url}}/weatherforecast/
-Accept: application/json
-
-###

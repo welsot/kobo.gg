@@ -1,5 +1,10 @@
 ## Commands
 
+- **Run Tests:**
+  ```bash
+  dotnet test api.Tests
+  ```
+
 ### Packages
 
 #### Adding and Restoring Packages
