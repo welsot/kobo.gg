@@ -1,10 +1,11 @@
+using api.Modules.Common.Controllers;
 using api.Modules.Common.Data;
 using api.Modules.Common.DTO;
-using api.Modules.Common.Services;
-using api.Modules.Email.DTO;
 using api.Modules.Email.Services;
 using api.Modules.User.DTOs;
+using api.Modules.User.Models;
 using api.Modules.User.Repository;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Modules.User.Controllers;
@@ -15,45 +16,47 @@ public class UserRegistrationController(
     ILogger<UserRegistrationController> logger,
     IUserRepository users,
     Mailer mailer
-) : ControllerBase
+) : ApiController
 {
+    [ProducesResponseType(typeof(GuidResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(GuidResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPost("api/users/register")]
-    public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
+    public async Task<IActionResult> Register([FromBody] UserRegistrationDto dto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        try
-        {
-            // Check if email already exists
-            var existingUser = await users.FindByEmailAsync(registrationDto.Email);
-            if (existingUser != null)
-            {
-                return Conflict(new ErrorResponse("already_registered"));
+        try {
+            var user = await users.FindByEmailAsync(dto.Email);
+            var isNewUser = false;
+
+            if (user == null) {
+                user = new Models.User(Guid.NewGuid(), dto.Email);
+                users.Add(user);
+                isNewUser = true;
             }
 
-            // Create new user
-            var user = new Models.User(Guid.NewGuid(), registrationDto.Email);
-
-            users.Add(user);
+            var otp = new OneTimePassword(user);
+            
             await db.SaveChangesAsync();
-
-            mailer.SendOneTimePasswordAsync(user.Email);
-
-            logger.LogInformation("Registration email sent to {Email}", user.Email);
-
-            return StatusCode(StatusCodes.Status201Created, new GuidResponse(user.Id));
+            await SendOneTimePassword(user.Email, isNewUser);
+        
+            return isNewUser 
+                ? Created(new GuidResponse(user.Id))
+                : Ok(new GuidResponse(user.Id));
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             logger.LogError(ex, "Error registering user");
-            return StatusCode(500, new ErrorResponse("unexpected_server_error"));
+            return Error(500, "unexpected_server_error");
         }
+    }
+
+    private async Task SendOneTimePassword(string email, string otp, bool isNewUser)
+    {
+        await mailer.SendOneTimePasswordAsync(email, otp);
+        logger.LogInformation("{Action} email sent to {Email}", 
+            isNewUser ? "Registration" : "Login", email);
     }
 }

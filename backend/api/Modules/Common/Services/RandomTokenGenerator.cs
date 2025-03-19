@@ -14,7 +14,6 @@ public static class RandomTokenGenerator
 
     public static string GenerateOneTimePassword()
     {
-        var random = new Random();
-        return random.Next(100000, 999999).ToString();
+        return Random.Shared.Next(0, 999999).ToString("D6");
     }
 }

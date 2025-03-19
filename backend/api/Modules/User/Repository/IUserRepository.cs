@@ -1,7 +1,8 @@
+using api.Modules.Common.Repository;
+
 namespace api.Modules.User.Repository;
 
-public interface IUserRepository
+public interface IUserRepository : IRepository<Models.User>
 {
-    void Add(Models.User user);
     Task<Models.User?> FindByEmailAsync(string email);
 }

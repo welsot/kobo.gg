@@ -1,6 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using api.Modules.Common.Services;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 namespace api.Modules.User.Models;
 
 [Table("one_time_password")]
@@ -11,26 +16,34 @@ public class OneTimePassword
     public int Id { get; private set; }
 
     [Required]
-    [ForeignKey("UserId")]
-    public User User { get; private set; }
-
-    public Guid UserId { get; private set; }
+    [Column]
+    [StringLength(6)]
+    public string Code { get; private set; }
 
     [Required]
-    [StringLength(6)]
-    [Column]
-    public string Otp { get; private set; }
+    [ForeignKey("User")]
+    public int UserId { get; private set; }
 
-    public DateTime CreatedAt { get; private set; }
+    [Required]
+    public User User { get; private set; }
 
-    private OneTimePassword()
+    [Required]
+    public DateTimeOffset ExpiresAt { get; private set; }
+
+    public OneTimePassword(User user)
     {
+        Code = RandomTokenGenerator.GenerateOneTimePassword();
+        User = user;
+        ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
     }
 
-    public OneTimePassword(User user, string otp)
+    private OneTimePassword() { }
+
+    public class Configuration : IEntityTypeConfiguration<OneTimePassword>
     {
-        User = user;
-        Otp = otp;
-        CreatedAt = DateTime.UtcNow;
+        public void Configure(EntityTypeBuilder<OneTimePassword> builder)
+        {
+            builder.HasIndex(x => new { x.Code, x.UserId }).IsUnique();
+        }
     }
 }
