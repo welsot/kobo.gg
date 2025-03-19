@@ -7,11 +7,25 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class ApiToken : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "users",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    is_email_verified = table.Column<bool>(type: "boolean", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_users", x => x.id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "api_token",
                 columns: table => new
@@ -43,6 +57,12 @@ namespace api.Migrations
                 name: "ix_api_token_user_id",
                 table: "api_token",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_users_email",
+                table: "users",
+                column: "email",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -50,6 +70,9 @@ namespace api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "api_token");
+
+            migrationBuilder.DropTable(
+                name: "users");
         }
     }
 }

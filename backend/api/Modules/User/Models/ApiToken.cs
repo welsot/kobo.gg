@@ -10,12 +10,14 @@ public class ApiToken
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
+    [Required]
     [StringLength(24)]
     [Column]
     public string Token { get; private set; }
 
+    [Required]
     [ForeignKey("UserId")]
     public User User { get; private set; }
     public Guid UserId { get; private set; }

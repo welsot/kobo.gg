@@ -13,19 +13,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
 
     public DbSet<ApiToken> ApiTokens { get; set; }
-    
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Email);
-            entity.HasIndex(e => e.Email).IsUnique();
-        });
-    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
