@@ -32,8 +32,17 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+    
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.MigrateAsync();
+    
         _connection = CreateDbConnection();
-        await InitializeRespawner();
+        _respawner = await Respawner.CreateAsync(_connection, new() 
+        { 
+            DbAdapter = DbAdapter.Postgres,
+            SchemasToInclude = ["public"]
+        });
     }
 
     private DbConnection CreateDbConnection()
@@ -72,29 +81,11 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         {
             var descriptor = services.SingleOrDefault(d => 
                 d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-                
-            if (descriptor != null)
-            {
-                services.Remove(descriptor);
-            }
-            
+            services.Remove(descriptor);
+        
             services.AddDbContext<ApplicationDbContext>(options =>
-            {
                 options.UseNpgsql(_dbContainer.GetConnectionString())
-                      .UseSnakeCaseNamingConvention();
-            });
-            
-            // Ensure database is created and migrated
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            
-            // Create the database and ensure it's clean
-            db.Database.EnsureDeleted();
-            //db.Database.EnsureCreated();
-            
-            // Apply migrations
-            //db.Database.Migrate();
+                    .UseSnakeCaseNamingConvention());
         });
     }
 
