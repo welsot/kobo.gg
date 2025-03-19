@@ -1,7 +1,8 @@
 using api.Modules.Common.Data;
 using api.Modules.Common.DTO;
+using api.Modules.Common.Services;
+using api.Modules.Email.DTO;
 using api.Modules.Email.Services;
-using api.Modules.Email.Templates;
 using api.Modules.User.DTOs;
 using api.Modules.User.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ public class UserRegistrationController(
     Db db,
     ILogger<UserRegistrationController> logger,
     IUserRepository users,
-    IEmailService emailService
+    Mailer mailer
 ) : ControllerBase
 {
     [ProducesResponseType(typeof(GuidResponse), StatusCodes.Status201Created)]
@@ -43,24 +44,7 @@ public class UserRegistrationController(
             users.Add(user);
             await db.SaveChangesAsync();
 
-            // Generate verification link (this would be implemented properly with token generation)
-            string verificationToken = Guid.NewGuid().ToString();
-            var verificationLink =
-                $"https://kobo.gg/verify-email?email={Uri.EscapeDataString(user.Email)}&token={verificationToken}";
-
-            // Send welcome email
-            var emailModel = new UserRegistrationEmailModel
-            {
-                Email = user.Email,
-                VerificationLink = verificationLink
-            };
-
-            await emailService.SendTemplatedEmailAsync(
-                to: user.Email,
-                subject: "Welcome to Kobo.gg! Please verify your email",
-                templateName: "UserRegistration",
-                model: emailModel
-            );
+            mailer.SendOneTimePasswordAsync(user.Email);
 
             logger.LogInformation("Registration email sent to {Email}", user.Email);
 

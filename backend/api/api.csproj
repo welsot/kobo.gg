@@ -28,6 +28,7 @@
 
     <ItemGroup>
         <Folder Include="Migrations\" />
+        <Folder Include="Modules\Email\Templates\" />
     </ItemGroup>
 
     <ItemGroup>

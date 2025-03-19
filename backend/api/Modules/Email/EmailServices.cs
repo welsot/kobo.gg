@@ -10,10 +10,8 @@ public static class EmailServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Register template renderer
         services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
         
-        // Register settings
         services.Configure<EmailSettings>(configuration.GetSection("Email:Settings"));
         services.Configure<MailcatcherSettings>(configuration.GetSection("Email:Mailcatcher"));
         services.Configure<BrevoSettings>(configuration.GetSection("Email:Brevo"));
@@ -45,6 +43,9 @@ public static class EmailServices
                     provider.GetRequiredService<ILogger<MailcatcherEmailService>>());
             });
         }
+        
+        // The most high-level service that should be used to send emails:
+        services.AddScoped<Mailer>();
         
         return services;
     }
