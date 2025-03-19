@@ -17,7 +17,7 @@ public class RazorViewRenderer : IRazorViewRenderer
 
     public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model)
     {
-        string viewPath = $"EmailTemplates/{viewName}.cshtml";
+        string viewPath = $"api.Resources.EmailTemplates.{viewName}.cshtml";
         string result = await _engine.CompileRenderAsync(viewPath, model);
         return result;
     }

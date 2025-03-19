@@ -28,8 +28,4 @@
     <ProjectReference Include="..\api\api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\**\*" />
-  </ItemGroup>
-
 </Project>

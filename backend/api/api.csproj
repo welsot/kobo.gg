@@ -40,4 +40,8 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\EmailTemplates\*.cshtml" />
+    </ItemGroup>
+
 </Project>
