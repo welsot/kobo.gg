@@ -1,0 +1,65 @@
+@model api.Modules.Email.Templates.UserRegistrationEmailModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Welcome to Kobo.gg</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .content {
+            padding: 20px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to Kobo.gg!</h1>
+    </div>
+    <div class="content">
+        <p>Hi there,</p>
+        <p>Thank you for registering with Kobo.gg. We're excited to have you on board!</p>
+        <p>Your account has been created with the email: <strong>@Model.Email</strong></p>
+        
+        @if (!string.IsNullOrEmpty(Model.VerificationLink))
+        {
+            <p>To verify your email address, please click the button below:</p>
+            <a href="@Model.VerificationLink" class="button">Verify Email</a>
+            <p>If the button doesn't work, copy and paste the following URL into your browser:</p>
+            <p>@Model.VerificationLink</p>
+        }
+        
+        <p>If you have any questions, feel free to contact our support team.</p>
+        <p>Best regards,<br />The Kobo.gg Team</p>
+    </div>
+    <div class="footer">
+        <p>&copy; @DateTime.Now.Year Kobo.gg. All rights reserved.</p>
+        <p>This email was sent to @Model.Email</p>
+    </div>
+</body>
+</html>

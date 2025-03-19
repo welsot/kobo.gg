@@ -22,6 +22,7 @@ public class Program
         // Modules
         builder.Services.AddCommonServices();
         builder.Services.AddUserServices();
+        builder.Services.AddEmailServices(builder.Configuration);
 
         var app = builder.Build();
 

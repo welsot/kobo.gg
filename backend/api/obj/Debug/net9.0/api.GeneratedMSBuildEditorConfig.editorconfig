@@ -27,3 +27,7 @@ build_property.MSBuildProjectDirectory = /home/vsaik/projects/kobo.gg/kobo.gg/ba
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
+
+[/home/vsaik/projects/kobo.gg/kobo.gg/backend/api/Resources/EmailTemplates/UserRegistration.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UmVzb3VyY2VzL0VtYWlsVGVtcGxhdGVzL1VzZXJSZWdpc3RyYXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
