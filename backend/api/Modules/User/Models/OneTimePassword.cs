@@ -1,24 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using api.Modules.Common.Services;
-
-using Microsoft.EntityFrameworkCore;
-
 namespace api.Modules.User.Models;
 
-[Table("api_token")]
-[Index(nameof(Token), IsUnique = true)]
-public class ApiToken
+[Table("one_time_password")]
+public class OneTimePassword
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; private set; }
-
-    [Required]
-    [StringLength(24)]
-    [Column]
-    public string Token { get; private set; }
 
     [Required]
     [ForeignKey("UserId")]
@@ -26,16 +16,21 @@ public class ApiToken
 
     public Guid UserId { get; private set; }
 
+    [Required]
+    [StringLength(6)]
+    [Column]
+    public string Otp { get; private set; }
+
     public DateTime CreatedAt { get; private set; }
 
-    private ApiToken()
+    private OneTimePassword()
     {
     }
 
-    public ApiToken(User user)
+    public OneTimePassword(User user, string otp)
     {
         User = user;
-        Token = RandomTokenGenerator.GenerateRandomToken();
+        Otp = otp;
         CreatedAt = DateTime.UtcNow;
     }
 }
