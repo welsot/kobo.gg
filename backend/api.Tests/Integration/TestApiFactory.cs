@@ -21,6 +21,9 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private DbConnection _connection = null!;
 
     private readonly IContainer _smtpContainer;
+    
+    private static readonly SemaphoreSlim _initLock = new(1, 1);
+    private static bool _smtpInitialized;
 
     public TestApiFactory()
     {
@@ -30,18 +33,32 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             .WithUsername("postgres")
             .WithPassword("postgres")
             .Build();
-        
+
         _smtpContainer = new ContainerBuilder()
             .WithImage("schickling/mailcatcher")
-            .WithPortBinding(1025)
-            .WithPortBinding(1080)
+            .WithPortBinding(1025, assignRandomHostPort: true)
+            .WithPortBinding(1080, assignRandomHostPort: true)
             .Build();
     }
 
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
-        await _smtpContainer.StartAsync();
+        
+        // SMTP Container is reusable between tests
+        await _initLock.WaitAsync();
+        try
+        {
+            if (!_smtpInitialized)
+            {
+                await _smtpContainer.StartAsync();
+                _smtpInitialized = true;
+            }
+        }
+        finally
+        {
+            _initLock.Release();
+        }
 
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -81,7 +98,7 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(_dbContainer.GetConnectionString())
                     .UseSnakeCaseNamingConvention());
-            
+
             services.Configure<MailcatcherSettings>(settings =>
             {
                 settings.Host = _smtpContainer.Hostname;
@@ -92,7 +109,6 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     async Task IAsyncLifetime.DisposeAsync()
     {
-        await _smtpContainer.StopAsync();
         await _dbContainer.StopAsync();
         _connection?.Dispose();
         await base.DisposeAsync();

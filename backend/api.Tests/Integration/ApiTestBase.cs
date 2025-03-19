@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace api.Tests.Integration;
 
-public abstract class ApiTestBase : IClassFixture<TestApiFactory>, IAsyncLifetime
+public abstract class ApiTestBase : IClassFixture<TestApiFactory>
 {
     protected readonly TestApiFactory Factory;
     protected readonly HttpClient Client;
@@ -13,11 +13,6 @@ public abstract class ApiTestBase : IClassFixture<TestApiFactory>, IAsyncLifetim
     {
         Factory = factory;
         Client = factory.CreateClient();
-    }
-
-    public virtual async Task InitializeAsync()
-    {
-        await Factory.ResetDatabaseAsync();
     }
 
     public virtual Task DisposeAsync() => Task.CompletedTask;
