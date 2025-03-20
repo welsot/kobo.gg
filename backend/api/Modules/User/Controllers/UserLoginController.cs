@@ -16,7 +16,8 @@ public class UserLoginController(
     ILogger<UserLoginController> logger,
     IOneTimePasswordRepository otpRepository,
     IApiTokenRepository apiTokenRepository,
-    UserMapper mapper
+    UserMapper mapper,
+    IWebHostEnvironment env
 ) : ApiController
 {
     [ProducesResponseType(typeof(ApiTokenResponse), StatusCodes.Status200OK)]
@@ -43,6 +44,16 @@ public class UserLoginController(
 
             await db.SaveChangesAsync();
             var userDto = mapper.Map(user);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = env.IsProduction(),
+                SameSite =  SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddYears(1)
+            };
+
+            Response.Cookies.Append("apiToken", apiToken.Token, cookieOptions);
 
             return Ok(
                 new ApiTokenResponse(

@@ -8,24 +8,6 @@ import { useCurrentUser } from '~/context/UserContext';
 import { storageService } from '~/utils/storage';
 import { apiGetCurrentUser } from '~/api/apiComponents';
 
-export function EnsureUserSet() {
-  const { user, setUser } = useCurrentUser();
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !user && storageService.getApiToken()) {
-      apiGetCurrentUser()
-        .then((res) => {
-          setUser(res.user);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [user]);
-
-  return null;
-}
-
 export function AuthRequired() {
   const { setUser } = useCurrentUser();
 

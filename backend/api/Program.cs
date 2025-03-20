@@ -71,10 +71,14 @@ public class Program
 
         app.UseHttpsRedirection();
 
-        // Enable authentication and authorization
-        //app.UseMiddleware<ApiExceptionMiddleware>();
+        app.UseMiddleware<ApiExceptionMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseCors(corsBuilder => corsBuilder
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
 
         app.MapControllers();
 

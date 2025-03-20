@@ -15,6 +15,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IOneTimePasswordRepository, OneTimePasswordRepository>();
             services.AddScoped<UserMapper>();
 
+            // Add background services
+            services.AddHostedService<OneTimePasswordCleanupService>();
+
             // Add API token authentication
             services.AddApiTokenAuth();
 
