@@ -14,7 +14,7 @@ public interface IEmailService
         string to,
         string subject,
         string templateName,
-        T model,
+        T dto,
         string fromEmail = "",
         string fromName = "");
 }

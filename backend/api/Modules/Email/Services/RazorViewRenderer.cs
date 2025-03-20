@@ -15,10 +15,10 @@ public class RazorViewRenderer : IRazorViewRenderer
             .Build();
     }
 
-    public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model)
+    public async Task<string> RenderViewToStringAsync<TDto>(string viewName, TDto dto)
     {
         string viewPath = $"api.Resources.EmailTemplates.{viewName}.cshtml";
-        string result = await _engine.CompileRenderAsync(viewPath, model);
+        string result = await _engine.CompileRenderAsync(viewPath, dto);
         return result;
     }
 }

@@ -12,8 +12,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250319140610_Init")]
-    partial class Init
+    [Migration("20250320091629_CreateOneTimePasswordsTable")]
+    partial class CreateOneTimePasswordsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,42 @@ namespace api.Migrations
                     b.ToTable("api_token", (string)null);
                 });
 
+            modelBuilder.Entity("api.Modules.User.Models.OneTimePassword", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_one_time_password");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_one_time_password_user_id");
+
+                    b.HasIndex("Code", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_one_time_password_code_user_id");
+
+                    b.ToTable("one_time_password", (string)null);
+                });
+
             modelBuilder.Entity("api.Modules.User.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -100,6 +136,18 @@ namespace api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_api_token_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("api.Modules.User.Models.OneTimePassword", b =>
+                {
+                    b.HasOne("api.Modules.User.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_one_time_password_users_user_id");
 
                     b.Navigation("User");
                 });

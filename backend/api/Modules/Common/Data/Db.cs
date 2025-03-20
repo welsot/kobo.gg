@@ -10,6 +10,10 @@ public class Db
     {
         _context = context;
     }
+    public void Add(object entity)
+    {
+        _context.Add(entity);
+    }
     
     public async Task<int> SaveChangesAsync()
     {

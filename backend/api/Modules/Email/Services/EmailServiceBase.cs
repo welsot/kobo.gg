@@ -2,21 +2,15 @@ using api.Modules.Email.Config;
 
 namespace api.Modules.Email.Services;
 
-public abstract class EmailServiceBase : IEmailService
+public abstract class EmailServiceBase(
+    IRazorViewRenderer viewRenderer,
+    EmailSettings settings,
+    ILogger<EmailServiceBase> logger
+) : IEmailService
 {
-    protected readonly IRazorViewRenderer _viewRenderer;
-    protected readonly EmailSettings _settings;
-    protected readonly ILogger<EmailServiceBase> _logger;
-
-    protected EmailServiceBase(
-        IRazorViewRenderer viewRenderer,
-        EmailSettings settings,
-        ILogger<EmailServiceBase> logger)
-    {
-        _viewRenderer = viewRenderer;
-        _settings = settings;
-        _logger = logger;
-    }
+    protected readonly IRazorViewRenderer _viewRenderer = viewRenderer;
+    protected readonly EmailSettings _settings = settings;
+    protected readonly ILogger<EmailServiceBase> _logger = logger;
 
     public abstract Task SendEmailAsync(
         string to,
@@ -30,13 +24,13 @@ public abstract class EmailServiceBase : IEmailService
         string to,
         string subject,
         string templateName,
-        T model,
+        T dto,
         string fromEmail = "",
         string fromName = "")
     {
         try
         {
-            string htmlContent = await _viewRenderer.RenderViewToStringAsync(templateName, model);
+            string htmlContent = await _viewRenderer.RenderViewToStringAsync(templateName, dto);
             await SendEmailAsync(to, subject, htmlContent, "", fromEmail, fromName);
         }
         catch (Exception ex)

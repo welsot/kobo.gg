@@ -22,7 +22,7 @@ public class OneTimePassword
 
     [Required]
     [ForeignKey("User")]
-    public int UserId { get; private set; }
+    public Guid UserId { get; private set; }
 
     [Required]
     public User User { get; private set; }

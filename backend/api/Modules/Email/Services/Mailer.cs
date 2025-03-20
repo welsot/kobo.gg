@@ -6,15 +6,15 @@ public class Mailer(
     IEmailService emailService
 )
 {
-    public async Task SendOneTimePasswordAsync(string email, string otp)
+    public async Task SendOneTimePasswordAsync(UserOneTimePasswordDto dto)
     {
-        var emailModel = new UserOneTimePasswordDto { Email = email, Otp = otp };
+        var subject = dto.IsNewUser ? "Welcome to Kobo.gg!" : $"Kobo.gg - your one-time password is {dto.Otp}";
 
         await emailService.SendTemplatedEmailAsync(
-            to: email,
-            subject: $"Welcome to Kobo.gg! Your one-time password is {otp}",
+            to: dto.Email,
+            subject: subject,
             templateName: "UserOneTimePassword",
-            model: emailModel
+            dto: dto
         );
     }
 }

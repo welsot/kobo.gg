@@ -1,6 +1,7 @@
 using api.Modules.Common.Controllers;
 using api.Modules.Common.Data;
 using api.Modules.Common.DTO;
+using api.Modules.Email.DTO;
 using api.Modules.Email.Services;
 using api.Modules.User.DTOs;
 using api.Modules.User.Models;
@@ -28,35 +29,38 @@ public class UserRegistrationController(
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        try {
+        try
+        {
             var user = await users.FindByEmailAsync(dto.Email);
             var isNewUser = false;
 
-            if (user == null) {
+            if (user == null)
+            {
                 user = new Models.User(Guid.NewGuid(), dto.Email);
                 users.Add(user);
                 isNewUser = true;
             }
 
             var otp = new OneTimePassword(user);
-            
+            db.Add(otp);
+
             await db.SaveChangesAsync();
-            await SendOneTimePassword(user.Email, isNewUser);
-        
-            return isNewUser 
+            await mailer.SendOneTimePasswordAsync(
+                new UserOneTimePasswordDto(
+                    email: user.Email,
+                    otp: otp.Code,
+                    isNewUser: isNewUser
+                )
+            );
+
+            return isNewUser
                 ? Created(new GuidResponse(user.Id))
                 : Ok(new GuidResponse(user.Id));
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             logger.LogError(ex, "Error registering user");
             return Error(500, "unexpected_server_error");
         }
-    }
-
-    private async Task SendOneTimePassword(string email, string otp, bool isNewUser)
-    {
-        await mailer.SendOneTimePasswordAsync(email, otp);
-        logger.LogInformation("{Action} email sent to {Email}", 
-            isNewUser ? "Registration" : "Login", email);
     }
 }

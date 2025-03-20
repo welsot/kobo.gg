@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class CreateOneTimePasswordsTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,6 +47,27 @@ namespace api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "one_time_password",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    code = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    expires_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_one_time_password", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_one_time_password_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_api_token_token",
                 table: "api_token",
@@ -56,6 +77,17 @@ namespace api.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_api_token_user_id",
                 table: "api_token",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_one_time_password_code_user_id",
+                table: "one_time_password",
+                columns: new[] { "code", "user_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_one_time_password_user_id",
+                table: "one_time_password",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
@@ -70,6 +102,9 @@ namespace api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "api_token");
+
+            migrationBuilder.DropTable(
+                name: "one_time_password");
 
             migrationBuilder.DropTable(
                 name: "users");
