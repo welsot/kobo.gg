@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Modules.User.Repository;
 
-public class ApiTokenRepository : BaseRepository<ApiToken>
+public class ApiTokenRepository : BaseRepository<ApiToken>, IApiTokenRepository
 {
     public ApiTokenRepository(ApplicationDbContext context) : base(context)
     {

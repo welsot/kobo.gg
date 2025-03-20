@@ -28,6 +28,10 @@ public class User
     [Column]
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     
+    public virtual ICollection<OneTimePassword> OneTimePasswords { get; private set; } = new List<OneTimePassword>();
+    
+    public virtual ICollection<ApiToken> ApiTokens { get; private set; } = new List<ApiToken>();
+    
     private User() { }
     
     public User(Guid id, string email)

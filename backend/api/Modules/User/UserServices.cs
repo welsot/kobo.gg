@@ -9,6 +9,8 @@ namespace Microsoft.Extensions.DependencyInjection
         )
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IApiTokenRepository, ApiTokenRepository>();
+            services.AddScoped<IOneTimePasswordRepository, OneTimePasswordRepository>();
 
             return services;
         }
