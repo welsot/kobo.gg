@@ -20,6 +20,6 @@ public class UserRepository : IUserRepository
     public async Task<Models.User?> FindByEmailAsync(string email) 
         => await _context.Users.FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant());
     
-    public async Task<Models.User?> FindByIdAsync(string id)
+    public async Task<Models.User?> FindByIdAsync(Guid id)
         => await _context.Users.FindAsync(id);
 }

@@ -9,7 +9,7 @@ public static class RandomTokenGenerator
         using var rng = RandomNumberGenerator.Create();
         var tokenData = new byte[16];
         rng.GetBytes(tokenData);
-        return Convert.ToBase64String(tokenData);
+        return Convert.ToHexString(tokenData);
     }
 
     public static string GenerateOneTimePassword()

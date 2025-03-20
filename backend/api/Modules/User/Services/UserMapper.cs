@@ -14,7 +14,7 @@ public class UserMapper(IUserRepository users)
         );
     }
 
-    public async Task<UserDto> MapByUserId(string userId)
+    public async Task<UserDto> MapByUserId(Guid userId)
     {
         var user = await users.FindByIdAsync(userId);
 

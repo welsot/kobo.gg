@@ -20,12 +20,16 @@ import { AnimatePresence, motion } from 'framer-motion';
 export async function loader({ request }: Route.LoaderArgs) {
   const requestCookies = request.headers.get('Cookie');
   const apiToken = requestCookies?.split(';').find((c) => c.trim().startsWith('apiToken='))?.split('=')[1];
+  
+  console.log('apiToken', apiToken);
 
   if (!apiToken) {
     return { user: null, error: null };
   }
 
   const { data, error } = await serverFetch<UserInfoResponse>('/api/users/me', request);
+  
+  console.log('data', data);
 
   if (error || !data) {
     return { user: null, error: error };

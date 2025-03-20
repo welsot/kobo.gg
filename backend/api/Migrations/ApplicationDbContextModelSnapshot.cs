@@ -37,8 +37,8 @@ namespace api.Migrations
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasMaxLength(24)
-                        .HasColumnType("character varying(24)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("token");
 
                     b.Property<Guid>("UserId")
@@ -128,7 +128,7 @@ namespace api.Migrations
             modelBuilder.Entity("api.Modules.User.Models.ApiToken", b =>
                 {
                     b.HasOne("api.Modules.User.Models.User", "User")
-                        .WithMany()
+                        .WithMany("ApiTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -140,13 +140,20 @@ namespace api.Migrations
             modelBuilder.Entity("api.Modules.User.Models.OneTimePassword", b =>
                 {
                     b.HasOne("api.Modules.User.Models.User", "User")
-                        .WithMany()
+                        .WithMany("OneTimePasswords")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_one_time_password_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("api.Modules.User.Models.User", b =>
+                {
+                    b.Navigation("ApiTokens");
+
+                    b.Navigation("OneTimePasswords");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,7 +16,7 @@ public class ApiToken
     public int Id { get; private set; }
 
     [Required]
-    [StringLength(24)]
+    [StringLength(255)]
     [Column]
     public string Token { get; private set; }
 

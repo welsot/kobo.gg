@@ -18,7 +18,7 @@ public class UserInfoController(
     [HttpGet("/api/users/me")]
     public async Task<IActionResult> Get()
     {
-        var userId = GetUserId()!;
+        var userId = GetUserId();
         var userDto = await mapper.MapByUserId(userId);
 
         return Ok(new UserInfoResponse(User: userDto));
