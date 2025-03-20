@@ -13,6 +13,9 @@ up:
 stop:
 	${BACKEND} && docker compose stop
 
+frontend:
+	${FRONTEND} && npm run dev
+
 migration:
 	${BACKEND_API} && dotnet ef migrations add $(name)
 
