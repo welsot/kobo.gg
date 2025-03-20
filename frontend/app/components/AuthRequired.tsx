@@ -60,14 +60,12 @@ function AuthRequiredContent() {
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            <Txt k={'authRequired.title'}>Authentication Required</Txt>
+            Authentication Required
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 mb-8">
-            <Txt k={'authRequired.message'}>
               You need to be logged in to access this page. Join our community of investors and deal
               sponsors to unlock exclusive investment opportunities.
-            </Txt>
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

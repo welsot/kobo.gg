@@ -13,9 +13,9 @@ import { Txt } from '~/cms/Txt';
 type LoginSteps = 'email' | 'verification';
 
 const errMsg = (
-  <Txt k={'login.error.verificationCodeFailed'}>
+  <>
     Failed to send verification code. Please check your email and try again.
-  </Txt>
+  </>
 );
 
 export default function Login() {
@@ -92,13 +92,11 @@ export default function Login() {
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              <Txt k={'login.title'}>Sign in to your account</Txt>
+              Sign in to your account
             </h1>
 
             <p className="text-lg md:text-xl text-gray-600 mb-8">
-              <Txt k={'login.subtitle'}>
                 Access exclusive investment opportunities and manage your mandates
-              </Txt>
             </p>
 
             {error && (
@@ -141,12 +139,12 @@ export default function Login() {
                 </div>
 
                 <p className="text-center text-gray-600 mt-4">
-                  <Txt k={'login.register.prompt'}>Don't have an account?</Txt>{' '}
+                  Don't have an account?{' '}
                   <Link
                     to="/investor/register"
                     className="text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    <Txt k={'login.register.link'}>Register Now</Txt>
+                    Register Now
                   </Link>
                 </p>
               </form>
@@ -154,10 +152,8 @@ export default function Login() {
               <form className="space-y-6 max-w-md mx-auto" onSubmit={handleVerificationSubmit}>
                 <div>
                   <p className="text-gray-600 mb-4">
-                    <Txt k={'login.verification.message'}>
                       We've sent a verification code to <strong>{email}</strong>. Please enter it
                       below to continue.
-                    </Txt>
                   </p>
 
                   <FormLabel htmlFor="otp">
@@ -222,18 +218,16 @@ function AlreadyAuthenticated() {
         <div className="container mx-auto px-4 py-16 md:py-24 flex flex-col items-center justify-center text-center">
           <div className="max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-lg border border-blue-100">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              <Txt k={'login.alreadyAuthenticated.title'}>You are already signed in</Txt>
+              You are already signed in
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8">
-              <Txt k={'login.alreadyAuthenticated.message'}>
                 You can access all features and opportunities
-              </Txt>
             </p>
             <Link
               to="/"
               className="text-lg px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors duration-200 shadow-md hover:shadow-lg inline-block"
             >
-              <Txt k={'login.alreadyAuthenticated.homeButton'}>Go to Home Page</Txt>
+              Go to Home Page
             </Link>
           </div>
         </div>

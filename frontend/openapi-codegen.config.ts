@@ -4,7 +4,7 @@ export default defineConfig({
   api: {
     from: {
       source: 'url',
-      url: 'http://localhost:8080/api-docs.json',
+      url: 'http://localhost:8080/openapi/v1.json',
     },
     outputDir: 'app/api',
     to: async (context) => {

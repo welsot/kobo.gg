@@ -17,13 +17,11 @@ export function ServerError({ error }: { error: any }) {
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              <Txt k={'serverError.title'}>Server Error</Txt>
+              Server Error
             </h1>
 
             <p className="text-lg md:text-xl text-gray-600 mb-8">
-              <Txt k={'serverError.message'}>
                 An error occurred while processing your request. Please try again later
-              </Txt>
             </p>
 
             <pre

@@ -8,18 +8,16 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">
-              <Txt k={'footer.company.title'}>Mandates.io</Txt>
+              Mandates.io
             </h3>
             <p className="text-gray-300 text-sm">
-              <Txt k={'footer.company.description'}>
                 Connecting qualified investors with exclusive investment opportunities worldwide.
-              </Txt>
             </p>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-4">
-              <Txt k={'footer.quicklinks.title'}>Quick Links</Txt>
+              Quick Links
             </h3>
             <ul className="space-y-2">
               <li>
@@ -59,7 +57,7 @@ export function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold mb-4">
-              <Txt k={'footer.investors.title'}>For Investors</Txt>
+              For Investors
             </h3>
             <ul className="space-y-2">
               <li>
@@ -94,7 +92,7 @@ export function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold mb-4">
-              <Txt k={'footer.dealsponsors.title'}>For Deal Sponsors</Txt>
+              For Deal Sponsors
             </h3>
             <ul className="space-y-2">
               <li>
@@ -130,9 +128,7 @@ export function Footer() {
 
         <div className="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            <Txt k={'footer.copyright'}>
               &copy; {new Date().getFullYear()} Mandates.io. All rights reserved.
-            </Txt>
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <Link

@@ -6,15 +6,11 @@ export function Hero() {
     <section className="bg-gray-50 py-16 md:py-24">
       <div className="container mx-auto px-4 flex flex-col items-center text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          <Txt k={'hero.title'}>
             Discover exclusive investment mandates from family offices worldwide
-          </Txt>
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mb-10">
-          <Txt k={'hero.subtitle'}>
             Connect with qualified investors looking for deals that match their specific investment
             criteria.
-          </Txt>
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <Link

@@ -16,14 +16,12 @@ export default function Contact() {
       <main className="flex-grow py-10">
         <div className="max-w-3xl mx-auto px-4 py-8 bg-white">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">
-            <Txt k="contact.title">Contact Us</Txt>
+            Contact Us
           </h1>
           <article className="prose prose-lg prose-blue max-w-none">
-            <Txt k="contact.placeholder2">
               This page will include ways to reach the Mandates.io team, including email addresses,
               phone numbers, and social media links. It may also include a contact form for direct
               inquiries.
-            </Txt>
           </article>
         </div>
       </main>

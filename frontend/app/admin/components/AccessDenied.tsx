@@ -10,10 +10,10 @@ export function AccessDenied() {
         <div className="container mx-auto px-4">
           <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
             <h2 className="text-lg font-semibold mb-2">
-              <Txt k={'accessDenied.title'}>Access Denied</Txt>
+              Access Denied
             </h2>
             <p>
-              <Txt k={'accessDenied.message'}>You do not have permission to access this area.</Txt>
+              You do not have permission to access this area.
             </p>
           </div>
         </div>

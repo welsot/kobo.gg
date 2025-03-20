@@ -72,7 +72,7 @@ export default function App() {
   return (
     <UserProvider initialUser={data.user}>
       <EnsureUserSet />
-      <TxtProvider txt={data.txt}>
+      
         <div className="relative">
           <AnimatePresence>
             {isLoading && (
@@ -96,7 +96,6 @@ export default function App() {
           </AnimatePresence>
           <Outlet />
         </div>
-      </TxtProvider>
     </UserProvider>
   );
 }

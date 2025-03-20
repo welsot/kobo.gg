@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
 import { apiPostVerifyEmail } from '~/api/apiComponents';
 import { ContentLoadingIndicator, StaticLayout } from '~/components/StaticLayout';
-import { Txt } from '~/cms/Txt';
 
 export default function ConfirmEmailPage() {
   const { token } = useParams();
@@ -43,20 +42,18 @@ export default function ConfirmEmailPage() {
             <>
               <CheckCircleIcon className="w-16 h-16 mx-auto text-green-500 mb-4" />
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                <Txt k={'confirmEmail.success.title'}>Email Verified Successfully</Txt>
+                Email Verified Successfully
               </h1>
             </>
           ) : (
             <>
               <ExclamationCircleIcon className="w-16 h-16 mx-auto text-red-500 mb-4" />
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                <Txt k={'confirmEmail.error.title'}>Error</Txt>
+                Error
               </h1>
               <p className="text-gray-600 mb-6">
-                <Txt k={'confirmEmail.error.message'}>
-                  We encountered an error while trying to verify your email. Please try again later
-                  or contact support.
-                </Txt>
+                We encountered an error while trying to verify your email. Please try again later
+                or contact support.
               </p>
             </>
           )}
@@ -64,7 +61,7 @@ export default function ConfirmEmailPage() {
             to="/"
             className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
           >
-            <Txt k={'confirmEmail.returnButton'}>Return to Homepage</Txt>
+            Return to Homepage
           </Link>
         </div>
       </motion.div>

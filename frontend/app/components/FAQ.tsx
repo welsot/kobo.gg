@@ -18,7 +18,7 @@ function FAQItem({ questionKey, answerKey, defaultQuestion, defaultAnswer }: FAQ
         onClick={() => setIsOpen(!isOpen)}
       >
         <h3 className="text-lg font-medium text-gray-900">
-          <Txt k={questionKey}>{defaultQuestion}</Txt>
+          {defaultQuestion}
         </h3>
         <span className="ml-6 flex-shrink-0">
           {isOpen ? (
@@ -55,7 +55,7 @@ function FAQItem({ questionKey, answerKey, defaultQuestion, defaultAnswer }: FAQ
       {isOpen && (
         <div className="mt-2">
           <p className="text-gray-600">
-            <Txt k={answerKey}>{defaultAnswer}</Txt>
+            {defaultAnswer}
           </p>
         </div>
       )}
@@ -107,7 +107,7 @@ export function FAQ() {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            <Txt k={'faq.title'}>Frequently Asked Questions</Txt>
+            Frequently Asked Questions
           </h2>
 
           <div className="space-y-2">
