@@ -34,17 +34,24 @@ public class UserRegistrationControllerTests : ApiTestBase
     }
 
     [Fact]
-    public async Task Register_WithDuplicateEmail_ReturnsConflict()
+    public async Task Register_WithDuplicateEmail_ReturnsOkWithUserId()
     {
         var registrationDto = new UserRegistrationDto { Email = "duplicate@example.com" };
     
-        await PostJsonAsync("/api/users/register", registrationDto);
+        // First registration - should create the user
+        var firstResponse = await PostJsonAsync("/api/users/register", registrationDto);
+        var firstContent = await firstResponse.Content.ReadFromJsonAsync<GuidResponse>();
+        firstResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
+        firstContent.ShouldNotBeNull();
+        var userId = firstContent.Id;
+        
+        // Second registration with the same email - should return OK with the same user ID
         var response = await PostJsonAsync("/api/users/register", registrationDto);
-        var errorContent = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        var content = await response.Content.ReadFromJsonAsync<GuidResponse>();
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
-        errorContent.ShouldNotBeNull();
-        errorContent.Code.ShouldBe("already_registered");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        content.ShouldNotBeNull();
+        content.Id.ShouldBe(userId);
     }
 
     [Fact]

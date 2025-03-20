@@ -6,8 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Modules.User.Repository;
 
-public class ApiTokenRepository(ApplicationDbContext context) : BaseRepository<ApiToken>(context)
+public class ApiTokenRepository : BaseRepository<ApiToken>
 {
+    public ApiTokenRepository(ApplicationDbContext context) : base(context)
+    {
+    }
+
     public async Task<Models.User?> FindByEmailAsync(string email)
-        => await context.Users.FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant());
+        => await _context.Users.FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant());
 }
