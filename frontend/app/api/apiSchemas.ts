@@ -5,6 +5,7 @@
  */
 export type ApiTokenResponse = {
   token: string;
+  user: UserDto;
 };
 
 export type ErrorResponse = {
@@ -27,6 +28,18 @@ export type ProblemDetails = {
   status?: number | null;
   detail?: string | null;
   instance?: string | null;
+};
+
+export type UserDto = {
+  /**
+   * @format uuid
+   */
+  id: string;
+  email: string;
+};
+
+export type UserInfoResponse = {
+  user: UserDto;
 };
 
 export type UserLoginDto = {

@@ -4,16 +4,16 @@ import { Navbar } from './Navbar';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 
 import { useEffect } from 'react';
-import { apiGetMe } from '~/api/apiComponents';
 import { useCurrentUser } from '~/context/UserContext';
 import { storageService } from '~/utils/storage';
+import { apiGetCurrentUser } from '~/api/apiComponents';
 
 export function EnsureUserSet() {
   const { user, setUser } = useCurrentUser();
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !user && storageService.getApiToken()) {
-      apiGetMe()
+      apiGetCurrentUser()
         .then((res) => {
           setUser(res.user);
         })
@@ -30,7 +30,7 @@ export function AuthRequired() {
   const { setUser } = useCurrentUser();
 
   useEffect(() => {
-    apiGetMe()
+    apiGetCurrentUser()
       .then((res) => {
         setUser(res.user);
       })
@@ -64,8 +64,8 @@ function AuthRequiredContent() {
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 mb-8">
-              You need to be logged in to access this page. Join our community of investors and deal
-              sponsors to unlock exclusive investment opportunities.
+            You need to be logged in to access this page. Join our community of investors and deal
+            sponsors to unlock exclusive investment opportunities.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

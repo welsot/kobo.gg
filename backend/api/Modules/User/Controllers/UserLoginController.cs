@@ -4,6 +4,7 @@ using api.Modules.Common.DTO;
 using api.Modules.User.DTOs;
 using api.Modules.User.Models;
 using api.Modules.User.Repository;
+using api.Modules.User.Services;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,13 +15,15 @@ public class UserLoginController(
     Db db,
     ILogger<UserLoginController> logger,
     IOneTimePasswordRepository otpRepository,
-    IApiTokenRepository apiTokenRepository
+    IApiTokenRepository apiTokenRepository,
+    UserMapper mapper
 ) : ApiController
 {
     [ProducesResponseType(typeof(ApiTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [EndpointName("apiUsersLogin")]
     [HttpPost("api/users/login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
     {
@@ -29,7 +32,7 @@ public class UserLoginController(
         try
         {
             var user = await otpRepository.FindByEmailAndCodeAsync(dto.Email, dto.Code);
-            
+
             if (user == null)
             {
                 return Error(404, "invalid_credentials");
@@ -37,10 +40,16 @@ public class UserLoginController(
 
             var apiToken = new ApiToken(user);
             apiTokenRepository.Add(apiToken);
-            
+
             await db.SaveChangesAsync();
-            
-            return Ok(new ApiTokenResponse(apiToken.Token));
+            var userDto = mapper.Map(user);
+
+            return Ok(
+                new ApiTokenResponse(
+                    Token: apiToken.Token,
+                    User: userDto
+                )
+            );
         }
         catch (Exception ex)
         {

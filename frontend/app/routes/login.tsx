@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { apiPostLogin, apiPostOtp } from '~/api/apiComponents';
-import { type LoginRequest, type OtpRequest } from '~/api/apiSchemas';
 import { FormInput, FormLabel, Req } from '~/components/form';
 import { authService } from '~/utils/authService';
 import { useCurrentUser } from '~/context/UserContext';
 import { Footer } from '~/components/Footer';
 import { Navbar } from '~/components/Navbar';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
+import { apiUsersLogin, apiUsersRegister } from '~/api/apiComponents';
 
 
 type LoginSteps = 'email' | 'verification';
@@ -37,9 +36,7 @@ export default function Login() {
     setError(null);
 
     try {
-      // Request OTP to be sent to the email
-      const otpRequest: OtpRequest = { email };
-      await apiPostOtp({ body: otpRequest });
+      await apiUsersRegister({ body: { email: email.trim() } });
       setStep('verification');
     } catch (err) {
       // @ts-ignore
@@ -63,11 +60,11 @@ export default function Login() {
 
     try {
       // Verify OTP and log in
-      const loginRequest: LoginRequest = { email, otp };
-      const response = await apiPostLogin({ body: loginRequest });
+      const loginRequest = { email: email.trim(), code: otp.trim() };
+      const response = await apiUsersLogin({ body: loginRequest });
 
       // Set token and update user context
-      authService.setApiToken(response.apiToken);
+      authService.setApiToken(response.token);
       setUser(response.user);
 
       // Redirect to home page after successful login

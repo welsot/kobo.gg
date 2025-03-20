@@ -5,3 +5,78 @@
  */
 import type * as Fetcher from "./apiFetcher";
 import { apiFetch } from "./apiFetcher";
+import type * as Schemas from "./apiSchemas";
+
+export type ApiGetCurrentUserError = Fetcher.ErrorWrapper<undefined>;
+
+export const apiGetCurrentUser = (signal?: AbortSignal) =>
+  apiFetch<
+    Schemas.UserInfoResponse,
+    ApiGetCurrentUserError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: "/api/users/me", method: "get", signal });
+
+export type ApiUsersLoginError = Fetcher.ErrorWrapper<
+  | {
+      status: 400;
+      payload: Schemas.ProblemDetails;
+    }
+  | {
+      status: 404;
+      payload: Schemas.ErrorResponse;
+    }
+>;
+
+export type ApiUsersLoginVariables = {
+  body: Schemas.UserLoginDto;
+};
+
+export const apiUsersLogin = (
+  variables: ApiUsersLoginVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.ApiTokenResponse,
+    ApiUsersLoginError,
+    Schemas.UserLoginDto,
+    {},
+    {},
+    {}
+  >({ url: "/api/users/login", method: "post", ...variables, signal });
+
+export type ApiUsersRegisterError = Fetcher.ErrorWrapper<
+  | {
+      status: 400;
+      payload: Schemas.ProblemDetails;
+    }
+  | {
+      status: 409;
+      payload: Schemas.ErrorResponse;
+    }
+>;
+
+export type ApiUsersRegisterVariables = {
+  body: Schemas.UserRegistrationDto;
+};
+
+export const apiUsersRegister = (
+  variables: ApiUsersRegisterVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.GuidResponse,
+    ApiUsersRegisterError,
+    Schemas.UserRegistrationDto,
+    {},
+    {},
+    {}
+  >({ url: "/api/users/register", method: "post", ...variables, signal });
+
+export const operationsByTag = {
+  userInfo: { apiGetCurrentUser },
+  userLogin: { apiUsersLogin },
+  userRegistration: { apiUsersRegister },
+};

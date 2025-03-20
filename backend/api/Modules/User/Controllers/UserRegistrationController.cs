@@ -24,6 +24,7 @@ public class UserRegistrationController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [EndpointName("apiUsersRegister")]
     [HttpPost("api/users/register")]
     public async Task<IActionResult> Register([FromBody] UserRegistrationDto dto)
     {

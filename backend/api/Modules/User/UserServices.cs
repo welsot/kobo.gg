@@ -1,5 +1,6 @@
 using api.Modules.User.Auth;
 using api.Modules.User.Repository;
+using api.Modules.User.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -12,7 +13,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IApiTokenRepository, ApiTokenRepository>();
             services.AddScoped<IOneTimePasswordRepository, OneTimePasswordRepository>();
-            
+            services.AddScoped<UserMapper>();
+
             // Add API token authentication
             services.AddApiTokenAuth();
 
