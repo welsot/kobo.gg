@@ -5,6 +5,7 @@
 BACKEND := cd backend
 BACKEND_API := cd backend/api
 BACKEND_TESTS := cd backend/api.Tests
+FRONTEND := cd frontend
 
 up:
 	${BACKEND} && docker compose up -d --remove-orphans
@@ -30,3 +31,13 @@ test:
 restore:
 	${BACKEND_API} && dotnet restore
 	${BACKEND_TESTS} && dotnet restore
+
+schema:
+	${FRONTEND} && npx openapi-codegen gen api
+
+cs:
+	${FRONTEND} && npm run format
+
+ts:
+	${FRONTEND} && npm run typecheck
+
