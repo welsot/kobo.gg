@@ -10,16 +10,13 @@ export function Navbar() {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
           <Link prefetch={'intent'} to={'/'} className="font-bold text-xl text-blue-600">
-            Mandates.io
+            Kobo.gg
           </Link>
         </div>
 
         <div className="hidden md:flex space-x-6">
           <Link prefetch={'intent'} to={'/'} className="text-gray-700 hover:text-blue-600">
             Home
-          </Link>
-          <Link prefetch={'intent'} to="/mandates" className="text-gray-700 hover:text-blue-600">
-            Mandates
           </Link>
           <Link prefetch={'intent'} to="/about" className="text-gray-700 hover:text-blue-600">
             About
@@ -40,13 +37,6 @@ function GuestButtons() {
     <div className="flex items-center space-x-4">
       <Link prefetch={'intent'} to="/login" className="text-blue-600 hover:text-blue-800">
         Login
-      </Link>
-      <Link
-        prefetch={'intent'}
-        to="/investor/register"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Register
       </Link>
     </div>
   );
