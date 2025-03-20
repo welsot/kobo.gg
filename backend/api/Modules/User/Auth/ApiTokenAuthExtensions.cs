@@ -15,6 +15,11 @@ public static class ApiTokenAuthExtensions
     public static IServiceCollection AddApiTokenAuth(this IServiceCollection services)
     {
         services
+            .AddAuthorization(options =>
+            {
+                options.AddPolicy(ApiTokenAuthOptions.DefaultScheme, policy =>
+                    policy.RequireAuthenticatedUser());
+            })
             .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = ApiTokenAuthOptions.DefaultScheme;

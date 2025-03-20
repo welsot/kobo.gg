@@ -1,4 +1,6 @@
 using api.Data;
+using api.Modules.User.Auth;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace api;
@@ -35,6 +37,7 @@ public class Program
         app.UseHttpsRedirection();
 
         // Enable authentication and authorization
+        //app.UseMiddleware<ApiExceptionMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
 

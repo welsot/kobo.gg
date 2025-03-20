@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 
+using api.Modules.Common.DTO;
 using api.Modules.User.Repository;
 
 using Microsoft.AspNetCore.Authentication;
@@ -18,7 +19,7 @@ public class ApiTokenAuthHandler : AuthenticationHandler<ApiTokenAuthOptions>
         IOptionsMonitor<ApiTokenAuthOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        IApiTokenRepository apiTokenRepository) 
+        IApiTokenRepository apiTokenRepository)
         : base(options, logger, encoder)
     {
         _apiTokenRepository = apiTokenRepository;
@@ -28,7 +29,7 @@ public class ApiTokenAuthHandler : AuthenticationHandler<ApiTokenAuthOptions>
     {
         // Look for the API token in header first
         string? apiToken = null;
-        
+
         if (Request.Headers.TryGetValue(ApiTokenHeader, out var headerValue))
         {
             apiToken = headerValue.ToString();
@@ -38,7 +39,7 @@ public class ApiTokenAuthHandler : AuthenticationHandler<ApiTokenAuthOptions>
         {
             apiToken = cookieValue;
         }
-        
+
         // If no token found at all, return no result (not failure)
         if (string.IsNullOrEmpty(apiToken))
         {
@@ -47,7 +48,7 @@ public class ApiTokenAuthHandler : AuthenticationHandler<ApiTokenAuthOptions>
 
         // Validate the token
         var user = await _apiTokenRepository.FindUserByTokenAsync(apiToken);
-        
+
         if (user == null)
         {
             return AuthenticateResult.Fail("Invalid API token");
@@ -56,8 +57,7 @@ public class ApiTokenAuthHandler : AuthenticationHandler<ApiTokenAuthOptions>
         // Create user identity based on the user found
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), new Claim(ClaimTypes.Email, user.Email)
         };
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
@@ -65,5 +65,12 @@ public class ApiTokenAuthHandler : AuthenticationHandler<ApiTokenAuthOptions>
         var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
         return AuthenticateResult.Success(ticket);
+    }
+
+    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        Response.StatusCode = 401;
+        Response.ContentType = "application/json";
+        await Response.WriteAsJsonAsync(new ErrorResponse("auth_required"));
     }
 }

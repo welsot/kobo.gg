@@ -1,5 +1,4 @@
 using api.Modules.Common.Data;
-using api.Modules.Common.OpenApi;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -10,10 +9,6 @@ namespace Microsoft.Extensions.DependencyInjection
         )
         {
             services.AddScoped<Db>();
-            
-            // Add API Token to OpenAPI/Swagger
-            services.AddApiTokenToOpenApi();
-
             return services;
         }
     }
