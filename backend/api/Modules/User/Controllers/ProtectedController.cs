@@ -16,7 +16,7 @@ public class ProtectedController : ApiController
     public IActionResult Get()
     {
         // Get the authenticated user's ID from claims
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = GetUserId();
         var userEmail = User.FindFirstValue(ClaimTypes.Email);
         
         return Ok(new { 
