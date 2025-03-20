@@ -8,7 +8,7 @@ import { useCurrentUser } from '~/context/UserContext';
 import { Footer } from '~/components/Footer';
 import { Navbar } from '~/components/Navbar';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
-import { Txt } from '~/cms/Txt';
+
 
 type LoginSteps = 'email' | 'verification';
 

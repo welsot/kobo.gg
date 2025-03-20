@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
-import { Txt } from '~/cms/Txt';
+
 
 export function ServerError({ error }: { error: any }) {
   return (

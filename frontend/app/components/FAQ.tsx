@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Txt } from '~/cms/Txt';
+
 
 interface FAQItemProps {
   questionKey: string;

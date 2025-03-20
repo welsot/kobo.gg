@@ -13,9 +13,6 @@ up:
 stop:
 	${BACKEND} && docker compose stop
 
-frontend:
-	${FRONTEND} && npm run dev
-
 migration:
 	${BACKEND_API} && dotnet ef migrations add $(name)
 
@@ -37,6 +34,9 @@ restore:
 
 schema:
 	${FRONTEND} && npx openapi-codegen gen api
+
+ui:
+	${FRONTEND} && npm run dev
 
 cs:
 	${FRONTEND} && npm run format

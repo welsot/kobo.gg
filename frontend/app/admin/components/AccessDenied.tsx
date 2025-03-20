@@ -1,6 +1,6 @@
 import { Navbar } from '~/components/Navbar';
 import { Footer } from '~/components/Footer';
-import { Txt } from '~/cms/Txt';
+
 
 export function AccessDenied() {
   return (

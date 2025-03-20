@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { Txt } from '~/cms/Txt';
+
 
 export function Footer() {
   return (

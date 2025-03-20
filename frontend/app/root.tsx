@@ -15,7 +15,6 @@ import { serverFetch } from '~/utils/serverFetch';
 import type { GetInitResponse } from '~/api/apiSchemas';
 import { UserProvider } from './context/UserContext';
 import { useEffect } from 'react';
-import { TxtProvider } from '~/context/TxtContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { EnsureUserSet } from '~/components/AuthRequired';
 

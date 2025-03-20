@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
-import { Txt } from '~/cms/Txt';
+
 import { useEffect } from 'react';
 import { apiGetMe } from '~/api/apiComponents';
 import { useCurrentUser } from '~/context/UserContext';
