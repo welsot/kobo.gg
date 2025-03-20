@@ -5,4 +5,5 @@ namespace api.Modules.User.Repository;
 
 public interface IApiTokenRepository : IRepository<ApiToken>
 {
+    Task<Models.User?> FindUserByTokenAsync(string token);
 }

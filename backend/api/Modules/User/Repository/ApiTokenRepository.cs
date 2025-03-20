@@ -14,4 +14,13 @@ public class ApiTokenRepository : BaseRepository<ApiToken>, IApiTokenRepository
 
     public async Task<Models.User?> FindByEmailAsync(string email)
         => await _context.Users.FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant());
+
+    public async Task<Models.User?> FindUserByTokenAsync(string token)
+    {
+        var apiToken = await _context.ApiTokens
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.Token == token);
+
+        return apiToken?.User;
+    }
 }
