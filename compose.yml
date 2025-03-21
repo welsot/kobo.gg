@@ -49,7 +49,7 @@ services:
     image: kobogg/backend:latest
     env_file:
       - ./backend/.env.prod
-    command: ./apply-migrations.sh
+    command: CONNECTIONSTRINGS__DEFAULTCONNECTION=${ConnectionStrings__DefaultConnection} migration-bundle
     depends_on:
       db:
         condition: service_healthy

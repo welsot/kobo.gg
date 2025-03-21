@@ -24,7 +24,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=publish /app/migration-bundle ./migration-bundle
-COPY ./apply-migrations.sh ./
 
 # Switch to root to install kepubify
 USER root
