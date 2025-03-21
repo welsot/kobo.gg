@@ -162,30 +162,7 @@ public class EpubUploadController : ApiController
     /// </summary>
     private string TransformFileNameForS3(string fileName, string extension)
     {
-        // Common Cyrillic to Latin transliterations
-        Dictionary<char, string> transliterationMap = new Dictionary<char, string>
-        {
-            // Ukrainian/Russian Cyrillic
-            {'а', "a"}, {'б', "b"}, {'в', "v"}, {'г', "g"}, {'ґ', "g"}, {'д', "d"}, {'е', "e"}, 
-            {'є', "ye"}, {'ж', "zh"}, {'з', "z"}, {'и', "y"}, {'і', "i"}, {'ї', "yi"}, {'й', "y"},
-            {'к', "k"}, {'л', "l"}, {'м', "m"}, {'н', "n"}, {'о', "o"}, {'п', "p"}, {'р', "r"},
-            {'с', "s"}, {'т', "t"}, {'у', "u"}, {'ф', "f"}, {'х', "kh"}, {'ц', "ts"}, {'ч', "ch"},
-            {'ш', "sh"}, {'щ', "shch"}, {'ь', ""}, {'ю', "yu"}, {'я', "ya"}, {'э', "e"}, {'ы', "y"},
-            {'ъ', ""}, {'ё', "yo"},
-            
-            // Common European diacritics
-            {'á', "a"}, {'à', "a"}, {'â', "a"}, {'ä', "a"}, {'ã', "a"}, {'å', "a"}, {'ą', "a"},
-            {'é', "e"}, {'è', "e"}, {'ê', "e"}, {'ë', "e"}, {'ę', "e"}, {'ė', "e"},
-            {'í', "i"}, {'ì', "i"}, {'î', "i"}, {'ï', "i"}, {'į', "i"},
-            {'ó', "o"}, {'ò', "o"}, {'ô', "o"}, {'ö', "o"}, {'õ', "o"}, {'ø', "o"}, {'ő', "o"},
-            {'ú', "u"}, {'ù', "u"}, {'û', "u"}, {'ü', "u"}, {'ų', "u"}, {'ű', "u"},
-            {'ý', "y"}, {'ÿ', "y"}, {'ñ', "n"}, {'ç', "c"}, {'č', "c"}, {'ć', "c"}, {'ß', "ss"},
-            {'ł', "l"}, {'ń', "n"}, {'ś', "s"}, {'ź', "z"}, {'ż', "z"}, {'ð', "d"}, {'þ', "th"},
-            
-            // Common symbols
-            {'&', "and"}, {'@', "at"}, {'#', "hash"}, {'$', "dollar"}, {'%', "percent"},
-            {'+', "plus"}, {'÷', "div"}, {'×', "x"}, {'=', "equal"}, {'°', "deg"}
-        };
+        Dictionary<char, string> transliterationMap = Transliteration.GetMap();
         
         // Convert to lowercase first (important for transliteration lookup)
         fileName = fileName.ToLowerInvariant();
