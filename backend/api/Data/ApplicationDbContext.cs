@@ -1,4 +1,5 @@
 using api.Modules.User.Models;
+using api.Modules.Kobo.Models;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,9 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<ApiToken> ApiTokens { get; set; }
     public DbSet<OneTimePassword> OneTimePasswords { get; set; }
+    
+    public DbSet<TmpBookBundle> TmpBookBundles { get; set; }
+    public DbSet<Book> Books { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

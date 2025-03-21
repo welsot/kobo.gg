@@ -1,3 +1,6 @@
+using api.Modules.Kobo.Repository;
+using api.Modules.Kobo.Services;
+
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class KoboServices
@@ -6,7 +9,9 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services
         )
         {
-            //services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITmpBookBundleRepository, TmpBookBundleRepository>();
+            services.AddScoped<TmpBookBundleCreator>();
+            services.AddScoped<TmpBookBundleMapper>();
 
             return services;
         }

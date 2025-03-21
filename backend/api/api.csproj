@@ -31,9 +31,6 @@
     <ItemGroup>
         <Folder Include="Migrations\" />
         <Folder Include="Modules\Email\Templates\" />
-        <Folder Include="Modules\Kobo\DTOs\" />
-        <Folder Include="Modules\Kobo\Http\Request\" />
-        <Folder Include="Modules\Kobo\Http\Response\" />
     </ItemGroup>
 
     <ItemGroup>
