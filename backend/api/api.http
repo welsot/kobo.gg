@@ -1,6 +1,28 @@
 @api_HostAddress = http://localhost:5163
 
-GET {{api_HostAddress}}/weatherforecast/
+###
+# Create a temporary book bundle
+POST {{api_HostAddress}}/api/kobo/bundles
 Accept: application/json
+
+###
+# Get upload URL for an ebook
+POST {{api_HostAddress}}/api/epub/upload-url
+Content-Type: application/json
+
+{
+  "tmpBookBundleId": "550e8400-e29b-41d4-a716-446655440000",
+  "fileName": "test.epub",
+  "contentType": "application/epub+zip"
+}
+
+###
+# Finalize books after upload
+POST {{api_HostAddress}}/api/kobo/books/finalize
+Content-Type: application/json
+
+{
+  "tmpBookBundleId": "550e8400-e29b-41d4-a716-446655440000"
+}
 
 ###

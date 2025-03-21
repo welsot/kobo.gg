@@ -11,8 +11,12 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddScoped<ITmpBookBundleRepository, TmpBookBundleRepository>();
             services.AddScoped<IPendingBookRepository, PendingBookRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
+            
             services.AddScoped<TmpBookBundleCreator>();
             services.AddScoped<TmpBookBundleMapper>();
+            services.AddScoped<BookConverter>();
+            
             services.AddHostedService<PendingBookCleanupService>();
 
             return services;

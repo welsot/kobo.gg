@@ -75,6 +75,34 @@ export const apiUsersRegister = (
     {}
   >({ url: "/api/users/register", method: "post", ...variables, signal });
 
+export type ApiFinalizeBooksError = Fetcher.ErrorWrapper<
+  | {
+      status: 400;
+      payload: Schemas.ErrorResponse;
+    }
+  | {
+      status: 404;
+      payload: Schemas.ErrorResponse;
+    }
+>;
+
+export type ApiFinalizeBooksVariables = {
+  body: Schemas.FinalizeBooksRequestDto;
+};
+
+export const apiFinalizeBooks = (
+  variables: ApiFinalizeBooksVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.FinalizeBooksResponseDto,
+    ApiFinalizeBooksError,
+    Schemas.FinalizeBooksRequestDto,
+    {},
+    {},
+    {}
+  >({ url: "/api/kobo/books/finalize", method: "post", ...variables, signal });
+
 export type ApiGetEpubUploadUrlError = Fetcher.ErrorWrapper<
   | {
       status: 400;
@@ -119,6 +147,7 @@ export const operationsByTag = {
   userInfo: { apiGetCurrentUser },
   userLogin: { apiUsersLogin },
   userRegistration: { apiUsersRegister },
+  book: { apiFinalizeBooks },
   epubUpload: { apiGetEpubUploadUrl },
   tmpBookBundle: { apiTmpBookBundleCreate },
 };

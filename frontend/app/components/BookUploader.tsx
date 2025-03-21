@@ -8,8 +8,8 @@ import {
   TrashIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { apiGetEpubUploadUrl, apiTmpBookBundleCreate } from '~/api/apiComponents';
-import type { TmpBookBundleDto } from '~/api/apiSchemas';
+import { apiFinalizeBooks, apiGetEpubUploadUrl, apiTmpBookBundleCreate } from '~/api/apiComponents';
+import type { FinalizeBooksResponseDto, TmpBookBundleDto } from '~/api/apiSchemas';
 import { isDev } from '~/utils/env';
 
 const ACCEPTED_FILE_TYPES = [
@@ -37,11 +37,13 @@ interface UploadedBook {
 export function BookUploader() {
   const [bookBundle, setBookBundle] = useState<TmpBookBundleDto | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isFinalizing, setIsFinalizing] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shortUrl, setShortUrl] = useState<string | null>(null);
   const [uploadedBooks, setUploadedBooks] = useState<UploadedBook[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [finalizationResult, setFinalizationResult] = useState<FinalizeBooksResponseDto | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Create a temporary book bundle when component mounts
@@ -168,9 +170,28 @@ export function BookUploader() {
     setUploadedBooks(prev => prev.filter(book => book.id !== bookId));
   };
 
-  const handleConfirmUpload = () => {
-    setUploadComplete(true);
-    setShowConfirmation(false);
+  const handleConfirmUpload = async () => {
+    if (!bookBundle) return;
+    
+    setIsFinalizing(true);
+    setError(null);
+    
+    try {
+      const result = await apiFinalizeBooks({
+        body: {
+          tmpBookBundleId: bookBundle.id
+        }
+      });
+      
+      setFinalizationResult(result);
+      setUploadComplete(true);
+      setShowConfirmation(false);
+    } catch (err) {
+      console.error('Failed to finalize books:', err);
+      setError('Failed to finalize your books. Please try again.');
+    } finally {
+      setIsFinalizing(false);
+    }
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -195,6 +216,8 @@ export function BookUploader() {
     setUploadComplete(false);
     setShowConfirmation(false);
     setUploadedBooks([]);
+    setIsFinalizing(false);
+    setFinalizationResult(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -222,7 +245,12 @@ export function BookUploader() {
             <div className="flex items-center justify-center mb-6">
               <CheckCircleIcon className="w-20 h-20 text-green-500" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Upload Complete!</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">Books Ready!</h3>
+            {finalizationResult && (
+              <p className="text-gray-600 mb-4">
+                Successfully processed {finalizationResult.convertedCount} book{finalizationResult.convertedCount !== 1 ? 's' : ''}.
+              </p>
+            )}
             <div className="mb-6">
               <p className="text-gray-600 mb-2">
                 Use this URL on your Kobo e-reader to download your books:
@@ -234,6 +262,9 @@ export function BookUploader() {
                 <span className="text-lg font-medium text-purple-800">{shortUrl}</span>
                 <LinkIcon className="w-5 h-5 text-purple-600" />
               </div>
+              <p className="text-sm text-gray-500 mt-2">
+                (Click to copy to clipboard)
+              </p>
             </div>
             <button
               onClick={resetUploader}
@@ -286,14 +317,21 @@ export function BookUploader() {
               </button>
               <button
                 onClick={handleConfirmUpload}
-                disabled={uploadedBooks.length === 0}
-                className={`px-5 py-2 rounded-lg font-medium ${
-                  uploadedBooks.length === 0
+                disabled={uploadedBooks.length === 0 || isFinalizing}
+                className={`px-5 py-2 rounded-lg font-medium flex items-center ${
+                  uploadedBooks.length === 0 || isFinalizing
                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                     : 'bg-purple-600 text-white hover:bg-purple-700'
                 }`}
               >
-                Continue
+                {isFinalizing ? (
+                  <>
+                    <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  'Continue'
+                )}
               </button>
             </div>
           </div>

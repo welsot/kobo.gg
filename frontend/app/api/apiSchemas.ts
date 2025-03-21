@@ -38,6 +38,24 @@ export type ErrorResponse = {
   code: string;
 };
 
+export type FinalizeBooksRequestDto = {
+  /**
+   * @format uuid
+   */
+  tmpBookBundleId: string;
+};
+
+export type FinalizeBooksResponseDto = {
+  /**
+   * @format int32
+   */
+  convertedCount: number;
+  /**
+   * @format uuid
+   */
+  tmpBookBundleId: string;
+};
+
 export type GuidResponse = {
   /**
    * @format uuid
