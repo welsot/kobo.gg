@@ -16,4 +16,19 @@ public static class RandomTokenGenerator
     {
         return Random.Shared.Next(0, 999999).ToString("D6");
     }
+    
+    public static string GenerateShortUrlCode(int length = 3)
+    {
+        // some chars removed to avoid confusion e.g lI1i0O
+        const string chars = "abcdefghjklmnopqrstuwxyzABCDEFGHJKLMNPQRSTUWXY23456789";
+        var stringChars = new char[length];
+        var random = new Random();
+
+        for (int i = 0; i < length; i++)
+        {
+            stringChars[i] = chars[random.Next(chars.Length)];
+        }
+
+        return new string(stringChars);
+    }
 }
