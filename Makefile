@@ -13,6 +13,9 @@ up:
 stop:
 	${BACKEND} && docker compose stop
 
+api:
+	${BACKEND_API} && dotnet watch run --environment Development
+
 migration:
 	${BACKEND_API} && dotnet ef migrations add $(name)
 
