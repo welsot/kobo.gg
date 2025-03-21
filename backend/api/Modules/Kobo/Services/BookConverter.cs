@@ -52,7 +52,9 @@ public class BookConverter
             try
             {
                 // Try to generate a download URL for the file to verify it exists
-                var downloadUrl = await _s3Service.GeneratePresignedDownloadUrlAsync(pendingBook.S3Key);
+                var fileExists = await _s3Service.KeyExistsAsync(pendingBook.S3Key);
+                
+                if (!fileExists) continue;
 
                 // If we got here, the file exists in S3
                 // Create a new Book entity from the PendingBook

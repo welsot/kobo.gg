@@ -3,6 +3,7 @@ using api.Modules.Common.Data;
 using api.Modules.Kobo.DTOs;
 using api.Modules.Kobo.Repository;
 using api.Modules.Kobo.Services;
+using api.Modules.Storage.Services;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +13,9 @@ namespace api.Modules.Kobo.Controllers;
 public class TmpBookBundleController(
     ILogger<TmpBookBundleController> logger,
     TmpBookBundleCreator tmpBookBundleCreator,
-    TmpBookBundleMapper mapper
+    TmpBookBundleMapper mapper,
+    ITmpBookBundleRepository tmpBookBundleRepository,
+    IS3Service s3Service
 ) : ApiController
 {
     [ProducesResponseType(typeof(TmpBookBundleDto), StatusCodes.Status201Created)]
@@ -30,6 +33,46 @@ public class TmpBookBundleController(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error creating temporary book bundle");
+            return Error(500, "unexpected_server_error");
+        }
+    }
+    
+    [ProducesResponseType(typeof(List<BookDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [EndpointName("apiBundleGetBooks")]
+    [HttpGet("api/kobo/bundles/{shortUrlCode}/books")]
+    public async Task<IActionResult> GetBooksByShortUrlCode(string shortUrlCode)
+    {
+        try
+        {
+            var bundle = await tmpBookBundleRepository.FindByShortUrlCodeAsync(shortUrlCode);
+            
+            if (bundle == null)
+            {
+                return NotFound();
+            }
+            
+            var bookDtos = new List<BookDto>();
+            
+            foreach (var book in bundle.Books)
+            {
+                var downloadUrl = await s3Service.GeneratePresignedDownloadUrlAsync(book.FilePath);
+                
+                bookDtos.Add(new BookDto(
+                    Id: book.Id,
+                    FileName: book.FileName,
+                    OriginalFileName: book.OriginalFileName,
+                    FileSize: book.FileSize,
+                    DownloadUrl: downloadUrl
+                ));
+            }
+            
+            return Ok(bookDtos);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting books for bundle with short URL code {ShortUrlCode}", shortUrlCode);
             return Error(500, "unexpected_server_error");
         }
     }

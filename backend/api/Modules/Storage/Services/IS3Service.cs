@@ -21,5 +21,7 @@ namespace api.Modules.Storage.Services
         /// <param name="expirationMinutes">Optional: URL expiration in minutes</param>
         /// <returns>A pre-signed URL for GET operation</returns>
         Task<string> GeneratePresignedDownloadUrlAsync(string key, int? expirationMinutes = null);
+
+        Task<bool> KeyExistsAsync(string key);
     }
 }

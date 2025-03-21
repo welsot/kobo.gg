@@ -8,6 +8,20 @@ export type ApiTokenResponse = {
   user: UserDto;
 };
 
+export type BookDto = {
+  /**
+   * @format uuid
+   */
+  id: string;
+  fileName: string;
+  originalFileName: string;
+  /**
+   * @format int64
+   */
+  fileSize: number;
+  downloadUrl: string;
+};
+
 export type EpubUploadUrlRequestDto = {
   /**
    * @format uuid

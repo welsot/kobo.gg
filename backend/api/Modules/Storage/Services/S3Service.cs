@@ -1,8 +1,10 @@
-using System;
-using System.Threading.Tasks;
+using System.Net;
+
 using Amazon.S3;
 using Amazon.S3.Model;
+
 using api.Modules.Storage.Config;
+
 using Microsoft.Extensions.Options;
 
 namespace api.Modules.Storage.Services
@@ -18,7 +20,8 @@ namespace api.Modules.Storage.Services
             _s3Settings = s3Settings.Value;
         }
 
-        public async Task<string> GeneratePresignedUploadUrlAsync(string key, string contentType, int? expirationMinutes = null)
+        public async Task<string> GeneratePresignedUploadUrlAsync(string key, string contentType,
+            int? expirationMinutes = null)
         {
             var request = new GetPreSignedUrlRequest
             {
@@ -43,6 +46,28 @@ namespace api.Modules.Storage.Services
             };
 
             return await _s3Client.GetPreSignedURLAsync(request);
+        }
+
+        public async Task<bool> KeyExistsAsync(string key)
+        {
+            try
+            {
+                var request = new GetObjectMetadataRequest { BucketName = _s3Settings.BucketName, Key = key };
+
+                // Attempt to fetch object metadata
+                await _s3Client.GetObjectMetadataAsync(request);
+                return true;
+            }
+            catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                // Return false if the object is not found
+                return false;
+            }
+            catch
+            {
+                // Re-throw other exceptions if any
+                throw;
+            }
         }
     }
 }

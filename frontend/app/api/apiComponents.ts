@@ -143,11 +143,44 @@ export const apiTmpBookBundleCreate = (signal?: AbortSignal) =>
     {}
   >({ url: "/api/kobo/bundles", method: "post", signal });
 
+export type ApiBundleGetBooksPathParams = {
+  shortUrlCode: string;
+};
+
+export type ApiBundleGetBooksError = Fetcher.ErrorWrapper<{
+  status: 404;
+  payload: Schemas.ProblemDetails;
+}>;
+
+export type ApiBundleGetBooksResponse = Schemas.BookDto[];
+
+export type ApiBundleGetBooksVariables = {
+  pathParams: ApiBundleGetBooksPathParams;
+};
+
+export const apiBundleGetBooks = (
+  variables: ApiBundleGetBooksVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    ApiBundleGetBooksResponse,
+    ApiBundleGetBooksError,
+    undefined,
+    {},
+    {},
+    ApiBundleGetBooksPathParams
+  >({
+    url: "/api/kobo/bundles/{shortUrlCode}/books",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
 export const operationsByTag = {
   userInfo: { apiGetCurrentUser },
   userLogin: { apiUsersLogin },
   userRegistration: { apiUsersRegister },
   book: { apiFinalizeBooks },
   epubUpload: { apiGetEpubUploadUrl },
-  tmpBookBundle: { apiTmpBookBundleCreate },
+  tmpBookBundle: { apiTmpBookBundleCreate, apiBundleGetBooks },
 };
