@@ -33,7 +33,7 @@ namespace api.Tests.Integration.Kobo.Controllers
             tmpBundleRepo.Add(bundle);
             await dbContext.SaveChangesAsync();
             
-            var pendingBook = await pendingBookRepo.CreateAsync(bundle, "test.epub", "test-key");
+            var pendingBook = await pendingBookRepo.CreateAsync(bundle, "test.epub", "test.epub", 0, "test-key");
             
             // Act
             var response = await Client.PostAsJsonAsync(

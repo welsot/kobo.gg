@@ -18,7 +18,20 @@ public class PendingBook
     [Required]
     [Column]
     [StringLength(255)]
+    public string OriginalFileName { get; private set; }
+
+    [Required]
+    [Column]
+    public long FileSize { get; private set; }
+
+    [Required]
+    [Column]
+    [StringLength(255)]
     public string S3Key { get; private set; }
+
+    [Column]
+    [StringLength(255)]
+    public string? KepubS3Key { get; private set; }
 
     [Required]
     [ForeignKey("TmpBookBundleId")]
@@ -34,12 +47,19 @@ public class PendingBook
 
     private PendingBook() { }
 
-    public PendingBook(Guid id, TmpBookBundle tmpBookBundle, string fileName, string s3Key)
+    public PendingBook(Guid id, TmpBookBundle tmpBookBundle, string fileName, string originalFileName, long fileSize, string s3Key)
     {
         Id = id;
         TmpBookBundle = tmpBookBundle;
         FileName = fileName;
+        OriginalFileName = originalFileName;
+        FileSize = fileSize;
         S3Key = s3Key;
         ExpiresAt = DateTime.UtcNow.AddHours(24);
+    }
+
+    public void SetKepubS3Key(string kepubS3Key)
+    {
+        KepubS3Key = kepubS3Key;
     }
 }

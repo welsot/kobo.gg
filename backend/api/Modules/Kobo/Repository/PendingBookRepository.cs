@@ -12,13 +12,20 @@ public class PendingBookRepository : BaseRepository<PendingBook>, IPendingBookRe
     {
     }
 
-    public async Task<PendingBook> CreateAsync(TmpBookBundle tmpBookBundle, string fileName, string s3Key,
+    public Task<PendingBook?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+         return _context.PendingBooks.Where(pb => pb.Id == id).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<PendingBook> CreateAsync(TmpBookBundle tmpBookBundle, string fileName, string originalFileName, long fileSize, string s3Key,
         CancellationToken cancellationToken = default)
     {
         var pendingBook = new PendingBook(
             Guid.NewGuid(),
             tmpBookBundle,
             fileName,
+            originalFileName,
+            fileSize,
             s3Key
         );
 
@@ -50,5 +57,15 @@ public class PendingBookRepository : BaseRepository<PendingBook>, IPendingBookRe
         await _context.PendingBooks
             .Where(otp => otp.ExpiresAt < now)
             .ExecuteDeleteAsync(cancellationToken);
+    }
+    
+    public async Task UpdateKepubS3KeyAsync(Guid pendingBookId, string kepubS3Key, CancellationToken cancellationToken = default)
+    {
+        var pendingBook = await _context.PendingBooks.FindAsync([pendingBookId], cancellationToken);
+        if (pendingBook != null)
+        {
+            pendingBook.SetKepubS3Key(kepubS3Key);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using api.Modules.Kobo.Repository;
 using api.Modules.Kobo.Services;
+using api.Modules.Storage.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -17,12 +18,16 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<TmpBookBundleMapper>();
             services.AddScoped<BookConverter>();
             
-            services.AddSingleton<KepubifyService>(sp => 
+            services.AddSingleton<IKepubifyService, KepubifyService>(sp => 
             {
                 string execPath = Environment.OSVersion.Platform == PlatformID.Unix ? 
                     "/usr/local/bin/kepubify" : 
                     Path.Combine(AppContext.BaseDirectory, "kepubify.exe");
-                return new KepubifyService(execPath);
+                    
+                var s3Service = sp.GetRequiredService<IS3Service>();
+                var logger = sp.GetRequiredService<ILogger<KepubifyService>>();
+                
+                return new KepubifyService(execPath, s3Service, logger);
             });
             
             services.AddHostedService<PendingBookCleanupService>();
