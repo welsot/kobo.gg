@@ -30,8 +30,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      migrations:
-        condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
@@ -43,18 +41,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-
-  # Migrations service that runs once during deployment
-  migrations:
-    image: kobogg/backend:latest
-    env_file:
-      - ./backend/.env.prod
-    command: ./migration-bundle
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - default
 
   frontend:
     image: kobogg/frontend:latest
