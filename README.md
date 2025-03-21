@@ -8,6 +8,12 @@
 
 ## Installation
 
+Install kepubify:
+```shell
+sudo curl -L https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit -o /usr/local/bin/kepubify && \
+    sudo chmod +x /usr/local/bin/kepubify
+```
+
 Install dotnet deps:
 ```shell
 make restore

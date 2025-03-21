@@ -20,4 +20,13 @@ RUN dotnet publish "api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAp
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Switch to root to install kepubify
+USER root
+RUN apt-get update && apt-get install -y curl
+RUN curl -L https://github.com/pgaskin/kepubify/releases/download/v4.0.4/kepubify-linux-64bit -o /usr/local/bin/kepubify && \
+    chmod +x /usr/local/bin/kepubify
+# Switch back to non-root user
+USER $APP_UID
+
 ENTRYPOINT ["dotnet", "api.dll"]

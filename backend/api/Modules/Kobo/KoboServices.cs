@@ -17,6 +17,14 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<TmpBookBundleMapper>();
             services.AddScoped<BookConverter>();
             
+            services.AddSingleton<KepubifyService>(sp => 
+            {
+                string execPath = Environment.OSVersion.Platform == PlatformID.Unix ? 
+                    "/usr/local/bin/kepubify" : 
+                    Path.Combine(AppContext.BaseDirectory, "kepubify.exe");
+                return new KepubifyService(execPath);
+            });
+            
             services.AddHostedService<PendingBookCleanupService>();
 
             return services;
