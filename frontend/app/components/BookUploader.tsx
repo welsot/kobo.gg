@@ -162,6 +162,30 @@ export function BookUploader() {
                 ${isUploading ? 'bg-gray-50 border-gray-300' : 'border-purple-300 hover:border-purple-500 bg-purple-50'}
               `}
               onClick={handleButtonClick}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (isUploading || !bookBundle) return;
+                
+                const file = e.dataTransfer.files?.[0];
+                if (!file) return;
+                
+                // Trigger the same upload logic as the file input
+                if (fileInputRef.current) {
+                  const dataTransfer = new DataTransfer();
+                  dataTransfer.items.add(file);
+                  fileInputRef.current.files = dataTransfer.files;
+                  
+                  // Manually trigger the change event
+                  const event = new Event('change', { bubbles: true });
+                  fileInputRef.current.dispatchEvent(event);
+                }
+              }}
             >
               {isUploading ? (
                 <div className="flex flex-col items-center justify-center">

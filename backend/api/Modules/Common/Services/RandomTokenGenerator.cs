@@ -20,7 +20,7 @@ public static class RandomTokenGenerator
     public static string GenerateShortUrlCode(int length = 3)
     {
         // some chars removed to avoid confusion e.g lI1i0O
-        const string chars = "abcdefghjklmnopqrstuwxyz23456789";
+        const string chars = "abcdefghkmnopqrstuwxyz23456789";
         var stringChars = new char[length];
         var random = new Random();
 
