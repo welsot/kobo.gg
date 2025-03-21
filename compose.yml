@@ -6,7 +6,7 @@ services:
       context: gateway
       dockerfile: app/Dockerfile
     depends_on:
-      - api-gateway
+      - backend
       - frontend
     expose:
       - 80
