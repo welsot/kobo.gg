@@ -46,7 +46,7 @@ services:
     image: kobogg/backend:latest
     env_file:
       - ./backend/.env.prod
-    command: ./migration-bundle
+    command: ./apply-migrations.sh
     depends_on:
       db:
         condition: service_healthy
