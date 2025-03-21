@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using api.Modules.Common.Controllers;
 using api.Modules.Common.DTO;
@@ -18,6 +21,17 @@ public class EpubUploadController : ApiController
     private readonly IPendingBookRepository _pendingBookRepository;
     private readonly IS3Service _s3Service;
     private readonly ILogger<EpubUploadController> _logger;
+    
+    // Dictionary mapping file extensions to MIME types
+    private static readonly Dictionary<string, string> SupportedFileTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { ".txt", "text/plain" },
+        { ".epub", "application/epub+zip" },
+        { ".mobi", "application/x-mobipocket-ebook" },
+        { ".pdf", "application/pdf" },
+        { ".cbz", "application/vnd.comicbook+zip" },
+        { ".cbr", "application/vnd.comicbook-rar" }
+    };
 
     public EpubUploadController(
         ITmpBookBundleRepository tmpBookBundleRepository,
@@ -50,12 +64,20 @@ public class EpubUploadController : ApiController
             return NotFound(new ErrorResponse($"TmpBookBundle with ID {request.TmpBookBundleId} not found"));
         }
 
-        // Ensure the file name has .epub extension
+        // Validate and process the file name
         string fileName = request.FileName;
-        if (!fileName.EndsWith(".epub", StringComparison.OrdinalIgnoreCase))
+        string extension = Path.GetExtension(fileName);
+        
+        // Check if the file has a supported extension
+        if (string.IsNullOrEmpty(extension) || !SupportedFileTypes.ContainsKey(extension))
         {
+            // Default to .epub if no valid extension found
             fileName += ".epub";
+            extension = ".epub";
         }
+        
+        // Get the content type for the file
+        string contentType = SupportedFileTypes[extension];
 
         // Generate a unique S3 key using the TmpBookBundle ID as the prefix
         var s3Key = $"{request.TmpBookBundleId}/{Guid.NewGuid()}/{fileName}";
@@ -66,8 +88,8 @@ public class EpubUploadController : ApiController
             fileName,
             s3Key);
 
-        // Generate the presigned URL
-        var url = await _s3Service.GeneratePresignedUploadUrlAsync(s3Key, "application/epub+zip");
+        // Generate the presigned URL with the appropriate content type
+        var url = await _s3Service.GeneratePresignedUploadUrlAsync(s3Key, contentType);
         
         return Ok(new EpubUploadUrlResponseDto
         {
