@@ -12,8 +12,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250321092511_CreateTmpBookBundleTable")]
-    partial class CreateTmpBookBundleTable
+    [Migration("20250321172058_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,20 +42,26 @@ namespace api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("file_name");
 
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("file_path");
-
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint")
                         .HasColumnName("file_size");
+
+                    b.Property<string>("KepubS3Key")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("kepub_s3key");
 
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("original_file_name");
+
+                    b.Property<string>("S3Key")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("s3key");
 
                     b.Property<Guid>("TmpBookBundleId")
                         .HasColumnType("uuid")
@@ -68,6 +74,61 @@ namespace api.Migrations
                         .HasDatabaseName("ix_book_tmp_book_bundle_id");
 
                     b.ToTable("book", (string)null);
+                });
+
+            modelBuilder.Entity("api.Modules.Kobo.Models.PendingBook", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("file_name");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint")
+                        .HasColumnName("file_size");
+
+                    b.Property<string>("KepubS3Key")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("kepub_s3key");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("original_file_name");
+
+                    b.Property<string>("S3Key")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("s3key");
+
+                    b.Property<Guid>("TmpBookBundleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tmp_book_bundle_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_pending_book");
+
+                    b.HasIndex("TmpBookBundleId")
+                        .HasDatabaseName("ix_pending_book_tmp_book_bundle_id");
+
+                    b.ToTable("pending_book", (string)null);
                 });
 
             modelBuilder.Entity("api.Modules.Kobo.Models.TmpBookBundle", b =>
@@ -212,6 +273,18 @@ namespace api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_book_tmp_book_bundle_tmp_book_bundle_id");
+
+                    b.Navigation("TmpBookBundle");
+                });
+
+            modelBuilder.Entity("api.Modules.Kobo.Models.PendingBook", b =>
+                {
+                    b.HasOne("api.Modules.Kobo.Models.TmpBookBundle", "TmpBookBundle")
+                        .WithMany()
+                        .HasForeignKey("TmpBookBundleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_pending_book_tmp_book_bundle_tmp_book_bundle_id");
 
                     b.Navigation("TmpBookBundle");
                 });

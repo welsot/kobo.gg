@@ -63,7 +63,8 @@ public class BookConverter
                     tmpBookBundle: tmpBookBundle,
                     fileName: pendingBook.FileName,
                     originalFileName: pendingBook.FileName,
-                    filePath: pendingBook.S3Key,
+                    s3Key: pendingBook.S3Key,
+                    kepubS3Key: pendingBook.KepubS3Key,
                     fileSize: pendingBook.FileSize
                 );
                 _bookRepository.Add(book);

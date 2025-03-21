@@ -22,7 +22,12 @@ public class Book
 
     [Required]
     [Column]
-    public string FilePath { get; private set; }
+    [StringLength(255)]
+    public string S3Key { get; private set; }
+
+    [Column]
+    [StringLength(255)]
+    public string? KepubS3Key { get; private set; }
 
     [Required]
     [Column]
@@ -39,12 +44,21 @@ public class Book
 
     private Book() { }
 
-    public Book(Guid id, TmpBookBundle tmpBookBundle, string fileName, string originalFileName, string filePath, long fileSize)
+    public Book(
+        Guid id,
+        TmpBookBundle tmpBookBundle,
+        string fileName,
+        string originalFileName,
+        string s3Key,
+        string? kepubS3Key,
+        long fileSize
+    )
     {
         Id = id;
         FileName = fileName;
         OriginalFileName = originalFileName;
-        FilePath = filePath;
+        S3Key = s3Key;
+        KepubS3Key = kepubS3Key;
         FileSize = fileSize;
         TmpBookBundle = tmpBookBundle;
     }

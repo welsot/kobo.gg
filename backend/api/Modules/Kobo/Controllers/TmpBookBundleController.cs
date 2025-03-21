@@ -57,14 +57,21 @@ public class TmpBookBundleController(
 
             foreach (var book in bundle.Books)
             {
-                var downloadUrl = await s3Service.GeneratePresignedDownloadUrlAsync(book.FilePath);
+                var downloadUrl = await s3Service.GeneratePresignedDownloadUrlAsync(book.S3Key);
+                string? kepubDownloadUrl = null;
+
+                if (book.KepubS3Key != null)
+                {
+                    kepubDownloadUrl = await s3Service.GeneratePresignedDownloadUrlAsync(book.KepubS3Key);
+                }
 
                 bookDtos.Add(new BookDto(
                     Id: book.Id,
                     FileName: book.FileName,
                     OriginalFileName: book.OriginalFileName,
                     FileSize: book.FileSize,
-                    DownloadUrl: downloadUrl
+                    DownloadUrl: downloadUrl,
+                    KepubDownloadUrl: kepubDownloadUrl
                 ));
             }
 
