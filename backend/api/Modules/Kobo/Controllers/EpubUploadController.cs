@@ -110,7 +110,7 @@ public class EpubUploadController : ApiController
     [ProducesResponseType(typeof(GuidResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ConfirmUpload(Guid pendingBookId, [FromQuery] long fileSize)
+    public async Task<IActionResult> ConfirmUpload(Guid pendingBookId)
     {
         // Get the pending book
         var pendingBook = await _pendingBookRepository.FindByIdAsync(pendingBookId);
