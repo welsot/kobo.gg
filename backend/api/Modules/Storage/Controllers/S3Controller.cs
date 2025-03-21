@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Modules.Storage.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class S3Controller : ApiController
     {
         private readonly IS3Service _s3Service;
@@ -25,7 +24,7 @@ namespace api.Modules.Storage.Controllers
         /// <param name="contentType">The content type of the file</param>
         /// <returns>A pre-signed URL for uploading</returns>
         [ApiTokenRequired]
-        [HttpGet("upload-url")]
+        [HttpGet("api/s3/upload-url")]
         public async Task<IActionResult> GetUploadUrl([FromQuery] string key, [FromQuery] string contentType)
         {
             if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(contentType))
@@ -47,7 +46,7 @@ namespace api.Modules.Storage.Controllers
         /// <param name="key">The object key (file path in the bucket)</param>
         /// <returns>A pre-signed URL for downloading</returns>
         [ApiTokenRequired]
-        [HttpGet("download-url")]
+        [HttpGet("api/s3/download-url")]
         public async Task<IActionResult> GetDownloadUrl([FromQuery] string key)
         {
             if (string.IsNullOrEmpty(key))

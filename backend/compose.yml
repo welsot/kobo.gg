@@ -14,7 +14,6 @@ services:
     ports:
       - "1080:1080"
       - "1025:1025"
-  # You can uncomment this section and use LocalStack for local S3 testing
   localstack:
     image: localstack/localstack:latest
     environment:
