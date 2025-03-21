@@ -5,5 +5,6 @@ public record BookDto(
     string FileName,
     string OriginalFileName,
     long FileSize,
-    string DownloadUrl
+    string DownloadUrl,
+    string? KepubDownloadUrl = null
 );

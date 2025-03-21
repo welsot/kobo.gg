@@ -1,5 +1,5 @@
 import { serverFetch } from '~/utils/serverFetch';
-import type { BookDto } from '~/api/apiSchemas';
+import type { BookDto, BundleBooksResponse } from '~/api/apiSchemas';
 import type { Route } from '~/+types/bundle';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -10,7 +10,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     });
   }
 
-  const { data, error } = await serverFetch<BookDto[]>(
+  const { data, error } = await serverFetch<BundleBooksResponse>(
     `/api/kobo/bundles/${shortUrlCode}/books`,
     request,
   );
@@ -20,16 +20,20 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       headers: { 'Content-Type': 'text/html' },
     });
   }
+  
+  const books = data.books
+  const expiresAt = new Date(data.expiresAt);
 
   const html = `<html lang="en"><body>
     <h1>Available Books</h1>
-    ${data.length === 0 ? '<p>No books available</p>' : `
+    ${books.length === 0 ? '<p>No books available</p>' : `
     <ul>
-      ${data.map(book => `
+      ${books.map(book => `
         <li>
           <div>${book.originalFileName}</div>
           <div>Size: ${Math.round(book.fileSize / 1024)} KB</div>
-          <div><a href="${book.downloadUrl}">Download Book</a></div>
+          <div><a href="${book.downloadUrl}">Download</a></div>
+          ${book.kepubDownloadUrl ? `<div><a href="${book.kepubDownloadUrl}">Download KEPUB</a></div>` : ''}
           <hr />
         </li>
       `).join('')}

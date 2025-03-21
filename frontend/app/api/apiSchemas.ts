@@ -20,6 +20,18 @@ export type BookDto = {
    */
   fileSize: number;
   downloadUrl: string;
+  /**
+   * @default null
+   */
+  kepubDownloadUrl?: string | null;
+};
+
+export type BundleBooksResponse = {
+  books: BookDto[];
+  /**
+   * @format date-time
+   */
+  expiresAt: string;
 };
 
 export type EpubUploadUrlRequestDto = {

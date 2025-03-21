@@ -192,8 +192,6 @@ export type ApiBundleGetBooksError = Fetcher.ErrorWrapper<{
   payload: Schemas.ProblemDetails;
 }>;
 
-export type ApiBundleGetBooksResponse = Schemas.BookDto[];
-
 export type ApiBundleGetBooksVariables = {
   pathParams: ApiBundleGetBooksPathParams;
 };
@@ -203,7 +201,7 @@ export const apiBundleGetBooks = (
   signal?: AbortSignal,
 ) =>
   apiFetch<
-    ApiBundleGetBooksResponse,
+    Schemas.BundleBooksResponse,
     ApiBundleGetBooksError,
     undefined,
     {},
@@ -216,36 +214,6 @@ export const apiBundleGetBooks = (
     signal,
   });
 
-export type ApiVerifyEmailError = Fetcher.ErrorWrapper<
-  | {
-      status: 400;
-      payload: Schemas.ErrorResponse;
-    }
-  | {
-      status: 404;
-      payload: Schemas.ErrorResponse;
-    }
->;
-
-export type ApiVerifyEmailVariables = {
-  body: {
-    token: string;
-  };
-};
-
-export const apiPostVerifyEmail = (
-  variables: ApiVerifyEmailVariables,
-  signal?: AbortSignal,
-) =>
-  apiFetch<
-    Schemas.GuidResponse,
-    ApiVerifyEmailError,
-    { token: string },
-    {},
-    {},
-    {}
-  >({ url: "/api/users/verify-email", method: "post", ...variables, signal });
-
 export const operationsByTag = {
   userInfo: { apiGetCurrentUser },
   userLogin: { apiUsersLogin },
@@ -253,5 +221,4 @@ export const operationsByTag = {
   book: { apiFinalizeBooks },
   epubUpload: { apiGetEpubUploadUrl, apiConfirmUpload },
   tmpBookBundle: { apiTmpBookBundleCreate, apiBundleGetBooks },
-  verification: { apiPostVerifyEmail },
 };

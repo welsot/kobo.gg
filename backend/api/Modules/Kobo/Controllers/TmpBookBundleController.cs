@@ -1,6 +1,6 @@
 using api.Modules.Common.Controllers;
-using api.Modules.Common.Data;
 using api.Modules.Kobo.DTOs;
+using api.Modules.Kobo.Http.Response;
 using api.Modules.Kobo.Repository;
 using api.Modules.Kobo.Services;
 using api.Modules.Storage.Services;
@@ -36,8 +36,8 @@ public class TmpBookBundleController(
             return Error(500, "unexpected_server_error");
         }
     }
-    
-    [ProducesResponseType(typeof(List<BookDto>), StatusCodes.Status200OK)]
+
+    [ProducesResponseType(typeof(BundleBooksResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [EndpointName("apiBundleGetBooks")]
@@ -47,18 +47,18 @@ public class TmpBookBundleController(
         try
         {
             var bundle = await tmpBookBundleRepository.FindByShortUrlCodeAsync(shortUrlCode);
-            
+
             if (bundle == null)
             {
                 return NotFound();
             }
-            
+
             var bookDtos = new List<BookDto>();
-            
+
             foreach (var book in bundle.Books)
             {
                 var downloadUrl = await s3Service.GeneratePresignedDownloadUrlAsync(book.FilePath);
-                
+
                 bookDtos.Add(new BookDto(
                     Id: book.Id,
                     FileName: book.FileName,
@@ -67,8 +67,13 @@ public class TmpBookBundleController(
                     DownloadUrl: downloadUrl
                 ));
             }
-            
-            return Ok(bookDtos);
+
+            return Ok(
+                new BundleBooksResponse(
+                    Books: bookDtos,
+                    ExpiresAt: bundle.ExpiresAt
+                )
+            );
         }
         catch (Exception ex)
         {
