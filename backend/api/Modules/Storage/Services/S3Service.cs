@@ -29,7 +29,7 @@ namespace api.Modules.Storage.Services
                 Expires = DateTime.UtcNow.AddMinutes(expirationMinutes ?? _s3Settings.SignedUrlExpirationMinutes)
             };
 
-            return await Task.FromResult(_s3Client.GetPreSignedURL(request));
+            return await _s3Client.GetPreSignedURLAsync(request);
         }
 
         public async Task<string> GeneratePresignedDownloadUrlAsync(string key, int? expirationMinutes = null)
@@ -42,7 +42,7 @@ namespace api.Modules.Storage.Services
                 Expires = DateTime.UtcNow.AddMinutes(expirationMinutes ?? _s3Settings.SignedUrlExpirationMinutes)
             };
 
-            return await Task.FromResult(_s3Client.GetPreSignedURL(request));
+            return await _s3Client.GetPreSignedURLAsync(request);
         }
     }
 }

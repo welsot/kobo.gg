@@ -11,6 +11,7 @@ import {
   apiGetEpubUploadUrl 
 } from '~/api/apiComponents';
 import type { TmpBookBundleDto } from '~/api/apiSchemas';
+import { isDev } from '~/utils/env';
 
 const ACCEPTED_FILE_TYPES = [
   '.txt',
@@ -68,13 +69,16 @@ export function BookUploader() {
         }
       });
 
+      const signedUrl = isDev
+        ? uploadUrlResponse.url.replace('https://', 'http://')
+        : uploadUrlResponse.url;
       // Upload file to the signed URL
-      const uploadResponse = await fetch(uploadUrlResponse.url, {
+      const uploadResponse = await fetch(signedUrl, {
         method: 'PUT',
         body: file,
         headers: {
           'Content-Type': file.type || 'application/octet-stream'
-        }
+        },
       });
 
       if (!uploadResponse.ok) {
