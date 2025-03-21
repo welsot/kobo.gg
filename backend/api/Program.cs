@@ -1,8 +1,10 @@
 using api.Data;
+using api.Modules.Storage;
 using api.Modules.User.Auth;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.IO;
 
 namespace api;
 
@@ -10,7 +12,17 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        // Load .env file if it exists
+        var envFile = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+        if (File.Exists(envFile))
+        {
+            DotNetEnv.Env.Load(envFile);
+        }
+        
         var builder = WebApplication.CreateBuilder(args);
+        
+        // Add environment variables to configuration
+        builder.Configuration.AddEnvironmentVariables();
 
         // Add services to the container.
 
@@ -60,6 +72,7 @@ public class Program
         builder.Services.AddCommonServices();
         builder.Services.AddUserServices();
         builder.Services.AddEmailServices(builder.Configuration);
+        builder.Services.AddStorageServices(builder.Configuration);
 
         var app = builder.Build();
 

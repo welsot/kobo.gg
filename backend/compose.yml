@@ -14,5 +14,21 @@ services:
     ports:
       - "1080:1080"
       - "1025:1025"
+  # You can uncomment this section and use LocalStack for local S3 testing
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    ports:
+      - "4566:4566"
+    volumes:
+      - ./localstack-setup:/etc/localstack/init/ready.d
+      - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   kobogg_db_volume:
