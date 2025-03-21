@@ -16,7 +16,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   );
 
   if (error || !data) {
-    return new Response(`<html lang="en"><body><h1>Error</h1><p>${error}</p></body></html>`, {
+    return new Response(`<html lang="en"><body><h1>Error</h1><p>Likely this url expired.</p><p>${error}</p></body></html>`, {
       headers: { 'Content-Type': 'text/html' },
     });
   }

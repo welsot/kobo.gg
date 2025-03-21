@@ -1,0 +1,63 @@
+services:
+  gateway:
+    image: kobogg/gateway:latest
+    restart: unless-stopped
+    build:
+      context: gateway
+      dockerfile: app/Dockerfile
+    depends_on:
+      - api-gateway
+      - frontend
+    expose:
+      - 80
+    networks:
+      - vps-traefik
+      - default
+    labels:
+      - "traefik.docker.network=vps-traefik"
+      - "traefik.enable=true"
+      - "traefik.http.routers.kobogg.rule=Host(`kobo.gg`, `www.kobo.gg`)"
+      - "traefik.http.routers.kobogg.entrypoints=websecure"
+      - "traefik.http.routers.kobogg.tls.certresolver=myresolver"
+  backend:
+    image: kobogg/backend:latest
+    restart: unless-stopped
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env.prod
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    networks:
+      - default
+
+  frontend:
+    image: kobogg/frontend:latest
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env.prod.local
+    build:
+      context: ./frontend
+      dockerfile: docker/prod/Dockerfile
+    networks:
+      - default
+  db:
+    image: postgres:17-alpine
+    env_file:
+      - ./.env.local
+    volumes:
+      - kobogg_db_volume:/var/lib/postgresql/data:rw
+    ports:
+      - "15432:5432"
+
+networks:
+  default:
+  vps-traefik:
+    external: true
+    
+volumes:
+  kobogg_db_volume:
