@@ -1,5 +1,9 @@
 using System.Net.Http.Json;
 using api.Data;
+using api.Modules.Common.DTO;
+using api.Modules.User.DTOs;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace api.Tests.Integration;
@@ -13,6 +17,26 @@ public abstract class ApiTestBase : IClassFixture<TestApiFactory>
     {
         Factory = factory;
         Client = factory.CreateClient();
+    }
+    
+    protected async Task<ApiTokenResponse> LoginUserAsync(HttpClient client)
+    {
+        // Create a test user
+        var registrationDto = new UserRegistrationDto { Email = "test-bundle@example.com" };
+        await client.PostAsJsonAsync("/api/users/register", registrationDto);
+
+        // Get OTP from database
+        var dbContext = CreateDbContext();
+        var user = await dbContext.Users.FirstAsync(u => u.Email == "test-bundle@example.com");
+        var otp = await dbContext.OneTimePasswords.FirstAsync(o => o.UserId == user.Id);
+
+        // Login with the valid credentials
+        var loginDto = new UserLoginDto { Email = "test-bundle@example.com", Code = otp.Code };
+        var response = await client.PostAsJsonAsync("/api/users/login", loginDto);
+
+        var result = await response.Content.ReadFromJsonAsync<ApiTokenResponse>();
+        if (result == null) throw new InvalidOperationException("Failed to deserialize API token response");
+        return result;
     }
 
     public virtual Task DisposeAsync() => Task.CompletedTask;
