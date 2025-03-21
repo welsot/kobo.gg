@@ -28,7 +28,10 @@ services:
     env_file:
       - ./backend/.env.prod
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
@@ -52,8 +55,6 @@ services:
         condition: service_healthy
     networks:
       - default
-    profiles:
-      - migrations
 
   frontend:
     image: kobogg/frontend:latest

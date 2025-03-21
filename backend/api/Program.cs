@@ -94,6 +94,8 @@ public class Program
             .AllowAnyHeader()
             .AllowCredentials());
 
+        app.MapGet("/health", () => Results.Ok("Healthy"));
+            
         app.MapControllers();
 
         app.Run();
