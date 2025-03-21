@@ -22,7 +22,7 @@ public class PendingBook
 
     [Required]
     [Column]
-    public long FileSize { get; private set; }
+    public long FileSize { get; set; }
 
     [Required]
     [Column]

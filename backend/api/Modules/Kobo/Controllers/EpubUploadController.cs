@@ -130,6 +130,20 @@ public class EpubUploadController : ApiController
 
         try
         {
+            // Get the file size from S3 and update the pendingBook
+            var fileSize = await _s3Service.GetFileSizeAsync(pendingBook.S3Key);
+            if (fileSize.HasValue)
+            {
+                // Update the file size in the pending book record
+                pendingBook.FileSize = fileSize.Value;
+                await _pendingBookRepository.UpdateAsync(pendingBook);
+                _logger.LogInformation("Updated file size for {FileName}: {Size} bytes", pendingBook.FileName, fileSize.Value);
+            }
+            else
+            {
+                _logger.LogWarning("Could not retrieve file size for {Key}", pendingBook.S3Key);
+            }
+
             // If the file is an EPUB, convert it to KEPUB format
             string extension = Path.GetExtension(pendingBook.FileName).ToLowerInvariant();
             if (extension == ".epub")

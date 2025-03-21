@@ -53,7 +53,7 @@ public class BookConverter
             {
                 // Try to generate a download URL for the file to verify it exists
                 var fileExists = await _s3Service.KeyExistsAsync(pendingBook.S3Key);
-                
+
                 if (!fileExists) continue;
 
                 // If we got here, the file exists in S3
@@ -64,7 +64,8 @@ public class BookConverter
                     fileName: pendingBook.FileName,
                     originalFileName: pendingBook.FileName,
                     filePath: pendingBook.S3Key,
-                    fileSize: 0);
+                    fileSize: pendingBook.FileSize
+                );
                 _bookRepository.Add(book);
 
                 // Delete the PendingBook as it's now converted to a Book

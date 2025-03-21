@@ -68,4 +68,10 @@ public class PendingBookRepository : BaseRepository<PendingBook>, IPendingBookRe
             await _context.SaveChangesAsync(cancellationToken);
         }
     }
+    
+    public async Task UpdateAsync(PendingBook pendingBook, CancellationToken cancellationToken = default)
+    {
+        _context.PendingBooks.Update(pendingBook);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

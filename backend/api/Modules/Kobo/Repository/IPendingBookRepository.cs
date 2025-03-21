@@ -19,4 +19,6 @@ public interface IPendingBookRepository : IRepository<PendingBook>
     Task DeleteExpiredAsync(CancellationToken cancellationToken = default);
     
     Task UpdateKepubS3KeyAsync(Guid pendingBookId, string kepubS3Key, CancellationToken cancellationToken = default);
+    
+    Task UpdateAsync(PendingBook pendingBook, CancellationToken cancellationToken = default);
 }

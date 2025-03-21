@@ -80,5 +80,27 @@ namespace api.Modules.Storage.Services
                 throw;
             }
         }
+        
+        public async Task<long?> GetFileSizeAsync(string key)
+        {
+            try
+            {
+                var request = new GetObjectMetadataRequest { BucketName = _s3Settings.BucketName, Key = key };
+
+                // Get object metadata which includes content length
+                var response = await s3Client.GetObjectMetadataAsync(request);
+                return response.ContentLength;
+            }
+            catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                // Return null if the object is not found
+                return null;
+            }
+            catch
+            {
+                // Re-throw other exceptions
+                throw;
+            }
+        }
     }
 }

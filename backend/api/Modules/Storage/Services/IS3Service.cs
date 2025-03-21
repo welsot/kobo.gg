@@ -23,5 +23,12 @@ namespace api.Modules.Storage.Services
         Task<string> GeneratePresignedDownloadUrlAsync(string key, int? expirationMinutes = null);
 
         Task<bool> KeyExistsAsync(string key);
+        
+        /// <summary>
+        /// Gets the file size in bytes for an object in S3
+        /// </summary>
+        /// <param name="key">The object key (file path in the bucket)</param>
+        /// <returns>The file size in bytes, or null if the object doesn't exist</returns>
+        Task<long?> GetFileSizeAsync(string key);
     }
 }
