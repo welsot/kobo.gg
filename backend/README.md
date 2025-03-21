@@ -22,6 +22,8 @@ To add and restore packages in a .NET project, use the following commands:
 
 ### Database
 
+#### Development Environment
+
 - **Create a new migration:**
   ```bash
   dotnet ef migrations add <MigrationName>
@@ -41,6 +43,23 @@ To add and restore packages in a .NET project, use the following commands:
   ```bash
   dotnet ef database drop
   ```
+
+#### Production Environment
+
+We use EF Core migration bundles for production deployment.
+
+- **Generate a migration bundle:**
+  ```bash
+  ./generate-migration-bundle.sh
+  ```
+
+- **Apply migrations in production:**
+  ```bash
+  # Apply migrations using the migrations service
+  docker compose --profile migrations up migrations
+  ```
+
+This runs the migrations service defined in compose.yml which uses the self-contained migration bundle.
 
 ```bash
 dotnet add package Microsoft.EntityFrameworkCore.Tools
