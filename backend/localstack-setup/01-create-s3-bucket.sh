@@ -11,7 +11,7 @@ awslocal s3api put-bucket-cors --bucket local-development-bucket --cors-configur
     {
       "AllowedHeaders": ["*"],
       "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
-      "AllowedOrigins": ["http://localhost:3000"],
+      "AllowedOrigins": ["*"],
       "ExposeHeaders": ["ETag"]
     }
   ]
