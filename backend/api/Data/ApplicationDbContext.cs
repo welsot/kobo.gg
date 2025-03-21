@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<TmpBookBundle> TmpBookBundles { get; set; }
     public DbSet<Book> Books { get; set; }
+    public DbSet<PendingBook> PendingBooks { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
