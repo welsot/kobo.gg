@@ -40,6 +40,7 @@ public class EpubUploadController : ApiController
         _logger = logger;
     }
 
+    [EndpointName("apiGetEpubUploadUrl")]
     [HttpPost("api/epub/upload-url")]
     [ProducesResponseType(typeof(EpubUploadUrlResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]

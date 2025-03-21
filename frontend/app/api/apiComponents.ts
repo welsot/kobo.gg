@@ -75,6 +75,34 @@ export const apiUsersRegister = (
     {}
   >({ url: "/api/users/register", method: "post", ...variables, signal });
 
+export type ApiGetEpubUploadUrlError = Fetcher.ErrorWrapper<
+  | {
+      status: 400;
+      payload: Schemas.ErrorResponse;
+    }
+  | {
+      status: 404;
+      payload: Schemas.ErrorResponse;
+    }
+>;
+
+export type ApiGetEpubUploadUrlVariables = {
+  body: Schemas.EpubUploadUrlRequestDto;
+};
+
+export const apiGetEpubUploadUrl = (
+  variables: ApiGetEpubUploadUrlVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.EpubUploadUrlResponseDto,
+    ApiGetEpubUploadUrlError,
+    Schemas.EpubUploadUrlRequestDto,
+    {},
+    {},
+    {}
+  >({ url: "/api/epub/upload-url", method: "post", ...variables, signal });
+
 export type ApiTmpBookBundleCreateError = Fetcher.ErrorWrapper<undefined>;
 
 export const apiTmpBookBundleCreate = (signal?: AbortSignal) =>
@@ -91,5 +119,6 @@ export const operationsByTag = {
   userInfo: { apiGetCurrentUser },
   userLogin: { apiUsersLogin },
   userRegistration: { apiUsersRegister },
+  epubUpload: { apiGetEpubUploadUrl },
   tmpBookBundle: { apiTmpBookBundleCreate },
 };
