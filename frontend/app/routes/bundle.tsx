@@ -5,7 +5,7 @@ import { Route } from '~/+types/bundle';
 export async function loader({ request, params }: Route.LoaderArgs) {
   const shortUrlCode = params.shortUrlCode;
   if (!shortUrlCode) {
-    return new Response("<html><body><h1>Error: Missing shortUrlCode</h1></body></html>", {
+    return new Response(`<html lang="en"><body><h1>Error: Missing shortUrlCode</h1></body></html>`, {
       headers: { "Content-Type": "text/html" }
     });
   }
@@ -16,12 +16,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   );
 
   if (error || !data) {
-    return new Response(`<html><body><h1>Error</h1><p>${error}</p></body></html>`, {
+    return new Response(`<html lang="en"><body><h1>Error</h1><p>${error}</p></body></html>`, {
       headers: { "Content-Type": "text/html" }
     });
   }
 
-  const html = `<html><body>
+  const html = `<html lang="en"><body>
     <h1>Available Books</h1>
     ${data.length === 0 ? '<p>No books available</p>' : `
     <ul>
