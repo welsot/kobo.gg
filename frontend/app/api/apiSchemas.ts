@@ -8,6 +8,32 @@ export type ApiTokenResponse = {
   user: UserDto;
 };
 
+export type EpubUploadUrlRequestDto = {
+  /**
+   * @format uuid
+   */
+  tmpBookBundleId: string;
+  /**
+   * @maxLength 255
+   * @minLength 0
+   */
+  fileName: string;
+  /**
+   * @maxLength 255
+   * @minLength 0
+   */
+  contentType: string;
+};
+
+export type EpubUploadUrlResponseDto = {
+  url: string;
+  key: string;
+  /**
+   * @format uuid
+   */
+  pendingBookId: string;
+};
+
 export type ErrorResponse = {
   code: string;
 };
@@ -28,6 +54,18 @@ export type ProblemDetails = {
   status?: number | null;
   detail?: string | null;
   instance?: string | null;
+};
+
+export type TmpBookBundleDto = {
+  /**
+   * @format uuid
+   */
+  id: string;
+  shortUrlCode: string;
+  /**
+   * @format date-time
+   */
+  expiresAt: string;
 };
 
 export type UserDto = {

@@ -75,8 +75,21 @@ export const apiUsersRegister = (
     {}
   >({ url: "/api/users/register", method: "post", ...variables, signal });
 
+export type ApiTmpBookBundleCreateError = Fetcher.ErrorWrapper<undefined>;
+
+export const apiTmpBookBundleCreate = (signal?: AbortSignal) =>
+  apiFetch<
+    Schemas.TmpBookBundleDto,
+    ApiTmpBookBundleCreateError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: "/api/kobo/bundles", method: "post", signal });
+
 export const operationsByTag = {
   userInfo: { apiGetCurrentUser },
   userLogin: { apiUsersLogin },
   userRegistration: { apiUsersRegister },
+  tmpBookBundle: { apiTmpBookBundleCreate },
 };
