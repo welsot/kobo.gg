@@ -23,8 +23,8 @@ services:
     image: kobogg/backend:latest
     restart: unless-stopped
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: ./backend/api
+      dockerfile: ../Dockerfile
     env_file:
       - ./backend/.env.prod
     depends_on:
