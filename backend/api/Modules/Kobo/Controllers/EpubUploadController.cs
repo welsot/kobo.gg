@@ -1,14 +1,14 @@
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
+
 using api.Modules.Common.Controllers;
 using api.Modules.Common.DTO;
 using api.Modules.Common.Services;
 using api.Modules.Kobo.DTOs;
-using api.Modules.Kobo.Models;
 using api.Modules.Kobo.Repository;
 using api.Modules.Kobo.Services;
 using api.Modules.Storage.Services;
-using System.Text.RegularExpressions;
-using System.Globalization;
-using System.Text;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +20,7 @@ public class EpubUploadController : ApiController
     private readonly ITmpBookBundleRepository _tmpBookBundleRepository;
     private readonly IPendingBookRepository _pendingBookRepository;
     private readonly IS3Service _s3Service;
-    private readonly IKepubifyService _kepubifyService;
+    private readonly EpubConverter _epubConverter;
     private readonly ILogger<EpubUploadController> _logger;
 
     // Dictionary mapping file extensions to MIME types
@@ -28,7 +28,7 @@ public class EpubUploadController : ApiController
     {
         { ".txt", "text/plain" },
         { ".epub", "application/epub+zip" },
-        { ".kepub", "application/epub+zip" },  // Kobo EPUB format
+        { ".kepub", "application/epub+zip" }, // Kobo EPUB format
         { ".mobi", "application/x-mobipocket-ebook" },
         { ".pdf", "application/pdf" },
         { ".cbz", "application/vnd.comicbook+zip" },
@@ -39,13 +39,13 @@ public class EpubUploadController : ApiController
         ITmpBookBundleRepository tmpBookBundleRepository,
         IPendingBookRepository pendingBookRepository,
         IS3Service s3Service,
-        IKepubifyService kepubifyService,
+        EpubConverter epubConverter,
         ILogger<EpubUploadController> logger)
     {
         _tmpBookBundleRepository = tmpBookBundleRepository;
         _pendingBookRepository = pendingBookRepository;
         _s3Service = s3Service;
-        _kepubifyService = kepubifyService;
+        _epubConverter = epubConverter;
         _logger = logger;
     }
 
@@ -104,7 +104,7 @@ public class EpubUploadController : ApiController
 
         return Ok(new EpubUploadUrlResponseDto(Url: url, Key: s3Key, PendingBookId: pendingBook.Id));
     }
-    
+
     [EndpointName("apiConfirmUpload")]
     [HttpPost("api/epub/confirm-upload/{pendingBookId}")]
     [ProducesResponseType(typeof(GuidResponse), StatusCodes.Status200OK)]
@@ -119,7 +119,7 @@ public class EpubUploadController : ApiController
             _logger.LogWarning("PendingBook with ID {Id} not found", pendingBookId);
             return NotFound(new ErrorResponse($"PendingBook with ID {pendingBookId} not found"));
         }
-        
+
         // Verify the file exists in S3
         bool fileExists = await _s3Service.KeyExistsAsync(pendingBook.S3Key);
         if (!fileExists)
@@ -127,7 +127,7 @@ public class EpubUploadController : ApiController
             _logger.LogWarning("File with S3 key {Key} not found", pendingBook.S3Key);
             return BadRequest(new ErrorResponse("The uploaded file could not be found"));
         }
-        
+
         try
         {
             // If the file is an EPUB, convert it to KEPUB format
@@ -135,24 +135,24 @@ public class EpubUploadController : ApiController
             if (extension == ".epub")
             {
                 _logger.LogInformation("Converting EPUB file {FileName} to KEPUB format", pendingBook.FileName);
-                string kepubS3Key = await _kepubifyService.ConvertToKepubAsync(pendingBook.S3Key, pendingBook.FileName);
-                
+                string kepubS3Key = await _epubConverter.ConvertToKepubAsync(pendingBook.S3Key, pendingBook.FileName);
+
                 // Update the pending book with the KEPUB S3 key
                 await _pendingBookRepository.UpdateKepubS3KeyAsync(pendingBookId, kepubS3Key);
-                
+
                 _logger.LogInformation("Successfully converted EPUB to KEPUB: {FileName}", pendingBook.FileName);
             }
-            
+
             return Ok(new GuidResponse(pendingBookId));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing uploaded file: {Message}", ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError, 
+            return StatusCode(StatusCodes.Status500InternalServerError,
                 new ErrorResponse($"Error processing uploaded file: {ex.Message}"));
         }
     }
-    
+
     /// <summary>
     /// Transforms a filename to be safe for S3 storage by:
     /// 1. Transliterating non-Latin characters to their Latin equivalents
@@ -163,10 +163,10 @@ public class EpubUploadController : ApiController
     private string TransformFileNameForS3(string fileName, string extension)
     {
         Dictionary<char, string> transliterationMap = Transliteration.GetMap();
-        
+
         // Convert to lowercase first (important for transliteration lookup)
         fileName = fileName.ToLowerInvariant();
-        
+
         // Apply transliteration
         StringBuilder result = new StringBuilder();
         foreach (char c in fileName)
@@ -186,7 +186,7 @@ public class EpubUploadController : ApiController
                 // Try standard Unicode normalization to handle other diacritics
                 string normalized = c.ToString().Normalize(NormalizationForm.FormD);
                 bool nonMarkAppended = false;
-                
+
                 foreach (char nc in normalized)
                 {
                     if (CharUnicodeInfo.GetUnicodeCategory(nc) != UnicodeCategory.NonSpacingMark)
@@ -204,7 +204,7 @@ public class EpubUploadController : ApiController
                         }
                     }
                 }
-                
+
                 // If nothing was appended (completely unsupported character), add a hyphen
                 if (!nonMarkAppended)
                 {
@@ -212,22 +212,22 @@ public class EpubUploadController : ApiController
                 }
             }
         }
-        
+
         // Replace consecutive hyphens with a single hyphen
         string sanitized = Regex.Replace(result.ToString(), "-{2,}", "-");
-        
+
         // Trim any leading or trailing hyphens
         sanitized = sanitized.Trim('-');
-        
+
         // If after all sanitization the string is empty, use a fallback
         if (string.IsNullOrEmpty(sanitized))
         {
             sanitized = "unknown-file";
         }
-        
+
         // Generate random 3-character code
         string randomCode = RandomTokenGenerator.GenerateShortUrlCode(3);
-        
+
         // Return the transformed filename with kobogg prefix and random code
         return $"{sanitized}-kobogg-{randomCode}{extension}";
     }

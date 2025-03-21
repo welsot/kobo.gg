@@ -1,122 +1,134 @@
 using System.Diagnostics;
-using System.IO;
-using System.Net.Http;
-using api.Modules.Storage.Services;
-using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace api.Modules.Kobo.Services;
 
-public interface IKepubifyService
-{
-    Task<string> ConvertToKepubAsync(string s3Key, string fileName);
-}
-
-public class KepubifyService : IKepubifyService
+public class KepubifyService
 {
     private readonly string _executablePath;
-    private readonly IS3Service _s3Service;
     private readonly ILogger<KepubifyService> _logger;
-    
+
     public KepubifyService(
-        string executablePath, 
-        IS3Service s3Service,
-        ILogger<KepubifyService> logger) 
+        string executablePath,
+        ILogger<KepubifyService> logger
+    )
     {
         _executablePath = executablePath;
-        _s3Service = s3Service;
         _logger = logger;
     }
-    
-    public async Task ConvertAsync(string inputPath, string outputPath) 
+
+    public async Task ConvertAsync(string inputPath, string outputPath)
     {
-        var process = new Process 
+        if (!File.Exists(inputPath))
         {
-            StartInfo = new ProcessStartInfo 
+            throw new FileNotFoundException($"Input file not found at path: {inputPath}");
+        }
+
+        // Verify file has proper extension
+        if (!inputPath.EndsWith(".epub", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("Input file does not have .epub extension: {Path}", inputPath);
+        }
+
+        // For kepubify v4.0.4, we can specify the exact output path
+        _logger.LogDebug("Running kepubify with input: {InputPath}, output: {OutputPath}", 
+            inputPath, outputPath);
+            
+        // Ensure output directory exists
+        string outputDir = Path.GetDirectoryName(outputPath) ?? Path.GetTempPath();
+        if (!Directory.Exists(outputDir))
+        {
+            Directory.CreateDirectory(outputDir);
+        }
+        
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
             {
                 FileName = _executablePath,
-                Arguments = $"\"{inputPath}\" \"{outputPath}\"",
+                // v4.0.4 uses -o to specify the output file directly with verbose flag
+                Arguments = $"-v -o \"{outputPath}\" \"{inputPath}\"",
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 UseShellExecute = false
             }
         };
-        
-        process.Start();
-        await process.WaitForExitAsync();
-    }
-    
-    public async Task<string> ConvertToKepubAsync(string s3Key, string fileName)
-    {
-        try
+
+        StringBuilder output = new();
+        StringBuilder error = new();
+
+        process.OutputDataReceived += (sender, args) =>
         {
-            _logger.LogInformation("Converting {FileName} to Kepub format", fileName);
+            if (args.Data != null)
+            {
+                output.AppendLine(args.Data);
+            }
+        };
+
+        process.ErrorDataReceived += (sender, args) =>
+        {
+            if (args.Data != null)
+            {
+                error.AppendLine(args.Data);
+            }
+        };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0)
+        {
+            _logger.LogError("Kepubify conversion failed with exit code {ExitCode}. Error: {Error}",
+                process.ExitCode, error.ToString());
+            throw new Exception($"Kepubify conversion failed with exit code {process.ExitCode}. Error: {error}");
+        }
+
+        // Kepubify creates output with the pattern: {original-name}.kepub.epub
+        // Let's find the actual output file
+        string inputFileName = Path.GetFileNameWithoutExtension(inputPath);
+        string expectedOutputFile = Path.Combine(
+            Path.GetDirectoryName(outputPath) ?? Path.GetTempPath(),
+            $"{inputFileName}.kepub.epub");
             
-            // Create temp file paths for processing
-            string tempInputPath = Path.GetTempFileName();
-            string tempOutputPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.kepub.epub");
+        if (!File.Exists(expectedOutputFile))
+        {
+            _logger.LogError("Output file was not created at expected path: {Path}", expectedOutputFile);
             
+            // Try to find any .kepub.epub file in the output directory
+            string finalOutputDir = Path.GetDirectoryName(outputPath) ?? Path.GetTempPath();
+            var kepubFiles = Directory.GetFiles(finalOutputDir, "*.kepub.epub");
+            
+            if (kepubFiles.Length > 0)
+            {
+                _logger.LogInformation("Found alternative kepub file: {Path}", kepubFiles[0]);
+                expectedOutputFile = kepubFiles[0];
+            }
+            else
+            {
+                throw new FileNotFoundException($"Output file was not created at path: {expectedOutputFile}");
+            }
+        }
+        
+        // If file exists but it's different from what we expected, rename it
+        if (expectedOutputFile != outputPath && File.Exists(expectedOutputFile))
+        {
+            File.Copy(expectedOutputFile, outputPath, true);
+            _logger.LogDebug("Renamed kepub file from {Source} to {Destination}", expectedOutputFile, outputPath);
+            
+            // Delete the original file after successful copy
             try
             {
-                // Download the epub file from S3
-                var downloadUrl = await _s3Service.GeneratePresignedDownloadUrlAsync(s3Key);
-                
-                using (var httpClient = new HttpClient())
-                using (var stream = await httpClient.GetStreamAsync(downloadUrl))
-                using (var fileStream = new FileStream(tempInputPath, FileMode.Create))
-                {
-                    await stream.CopyToAsync(fileStream);
-                }
-                
-                // Convert epub to kepub
-                await ConvertAsync(tempInputPath, tempOutputPath);
-                
-                // Generate new S3 key for the kepub file
-                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
-                if (fileNameWithoutExt.EndsWith(".kepub", StringComparison.OrdinalIgnoreCase))
-                {
-                    fileNameWithoutExt = fileNameWithoutExt.Substring(0, fileNameWithoutExt.Length - 6);
-                }
-                
-                string kepubFileName = $"{fileNameWithoutExt}.kepub.epub";
-                string kepubS3Key = s3Key.Replace(Path.GetFileName(s3Key), kepubFileName);
-                
-                // Upload the converted file back to S3
-                var uploadUrl = await _s3Service.GeneratePresignedUploadUrlAsync(kepubS3Key, "application/epub+zip");
-                
-                using (var fileStream = new FileStream(tempOutputPath, FileMode.Open))
-                using (var httpClient = new HttpClient())
-                {
-                    var content = new StreamContent(fileStream);
-                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/epub+zip");
-                    
-                    using (var request = new HttpRequestMessage(HttpMethod.Put, uploadUrl))
-                    {
-                        request.Content = content;
-                        var response = await httpClient.SendAsync(request);
-                        response.EnsureSuccessStatusCode();
-                    }
-                }
-                
-                _logger.LogInformation("Successfully converted {FileName} to Kepub format", fileName);
-                return kepubS3Key;
+                File.Delete(expectedOutputFile);
             }
-            finally
+            catch (Exception ex)
             {
-                // Clean up temporary files
-                if (File.Exists(tempInputPath))
-                {
-                    File.Delete(tempInputPath);
-                }
-                
-                if (File.Exists(tempOutputPath))
-                {
-                    File.Delete(tempOutputPath);
-                }
+                _logger.LogWarning(ex, "Could not delete original kepub file: {Path}", expectedOutputFile);
             }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error converting epub to kepub: {Message}", ex.Message);
-            throw;
-        }
+
+        _logger.LogInformation("Kepubify conversion successful. Output: {Output}", output.ToString().Trim());
     }
 }

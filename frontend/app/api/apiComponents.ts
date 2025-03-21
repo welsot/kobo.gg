@@ -131,6 +131,46 @@ export const apiGetEpubUploadUrl = (
     {}
   >({ url: "/api/epub/upload-url", method: "post", ...variables, signal });
 
+export type ApiConfirmUploadPathParams = {
+  /**
+   * @format uuid
+   */
+  pendingBookId: string;
+};
+
+export type ApiConfirmUploadError = Fetcher.ErrorWrapper<
+  | {
+      status: 400;
+      payload: Schemas.ErrorResponse;
+    }
+  | {
+      status: 404;
+      payload: Schemas.ErrorResponse;
+    }
+>;
+
+export type ApiConfirmUploadVariables = {
+  pathParams: ApiConfirmUploadPathParams;
+};
+
+export const apiConfirmUpload = (
+  variables: ApiConfirmUploadVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.GuidResponse,
+    ApiConfirmUploadError,
+    undefined,
+    {},
+    {},
+    ApiConfirmUploadPathParams
+  >({
+    url: "/api/epub/confirm-upload/{pendingBookId}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
 export type ApiTmpBookBundleCreateError = Fetcher.ErrorWrapper<undefined>;
 
 export const apiTmpBookBundleCreate = (signal?: AbortSignal) =>
@@ -176,11 +216,42 @@ export const apiBundleGetBooks = (
     signal,
   });
 
+export type ApiVerifyEmailError = Fetcher.ErrorWrapper<
+  | {
+      status: 400;
+      payload: Schemas.ErrorResponse;
+    }
+  | {
+      status: 404;
+      payload: Schemas.ErrorResponse;
+    }
+>;
+
+export type ApiVerifyEmailVariables = {
+  body: {
+    token: string;
+  };
+};
+
+export const apiPostVerifyEmail = (
+  variables: ApiVerifyEmailVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.GuidResponse,
+    ApiVerifyEmailError,
+    { token: string },
+    {},
+    {},
+    {}
+  >({ url: "/api/users/verify-email", method: "post", ...variables, signal });
+
 export const operationsByTag = {
   userInfo: { apiGetCurrentUser },
   userLogin: { apiUsersLogin },
   userRegistration: { apiUsersRegister },
   book: { apiFinalizeBooks },
-  epubUpload: { apiGetEpubUploadUrl },
+  epubUpload: { apiGetEpubUploadUrl, apiConfirmUpload },
   tmpBookBundle: { apiTmpBookBundleCreate, apiBundleGetBooks },
+  verification: { apiPostVerifyEmail },
 };

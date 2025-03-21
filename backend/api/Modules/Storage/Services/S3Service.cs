@@ -9,16 +9,13 @@ using Microsoft.Extensions.Options;
 
 namespace api.Modules.Storage.Services
 {
-    public class S3Service : IS3Service
+    public class S3Service(
+        IAmazonS3 s3Client,
+        IOptions<S3Settings> s3Settings,
+        IWebHostEnvironment env
+        ) : IS3Service
     {
-        private readonly IAmazonS3 _s3Client;
-        private readonly S3Settings _s3Settings;
-
-        public S3Service(IAmazonS3 s3Client, IOptions<S3Settings> s3Settings)
-        {
-            _s3Client = s3Client;
-            _s3Settings = s3Settings.Value;
-        }
+        private readonly S3Settings _s3Settings = s3Settings.Value;
 
         public async Task<string> GeneratePresignedUploadUrlAsync(string key, string contentType,
             int? expirationMinutes = null)
@@ -32,7 +29,14 @@ namespace api.Modules.Storage.Services
                 Expires = DateTime.UtcNow.AddMinutes(expirationMinutes ?? _s3Settings.SignedUrlExpirationMinutes)
             };
 
-            return await _s3Client.GetPreSignedURLAsync(request);
+            var signedUrl = await s3Client.GetPreSignedURLAsync(request);
+
+            if (env.IsDevelopment())
+            {
+                signedUrl = signedUrl.Replace("https://", "http://");
+            }
+
+            return signedUrl;
         }
 
         public async Task<string> GeneratePresignedDownloadUrlAsync(string key, int? expirationMinutes = null)
@@ -45,7 +49,14 @@ namespace api.Modules.Storage.Services
                 Expires = DateTime.UtcNow.AddMinutes(expirationMinutes ?? _s3Settings.SignedUrlExpirationMinutes)
             };
 
-            return await _s3Client.GetPreSignedURLAsync(request);
+            var signedUrl = await s3Client.GetPreSignedURLAsync(request);
+            
+            if (env.IsDevelopment())
+            {
+                signedUrl = signedUrl.Replace("https://", "http://");
+            }
+
+            return signedUrl;
         }
 
         public async Task<bool> KeyExistsAsync(string key)
@@ -55,7 +66,7 @@ namespace api.Modules.Storage.Services
                 var request = new GetObjectMetadataRequest { BucketName = _s3Settings.BucketName, Key = key };
 
                 // Attempt to fetch object metadata
-                await _s3Client.GetObjectMetadataAsync(request);
+                await s3Client.GetObjectMetadataAsync(request);
                 return true;
             }
             catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)

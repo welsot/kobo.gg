@@ -6,7 +6,7 @@ using api.Modules.Storage.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace api.Modules.Storage
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class StorageServices
     {

@@ -8,7 +8,7 @@ import {
   TrashIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { apiFinalizeBooks, apiGetEpubUploadUrl, apiTmpBookBundleCreate } from '~/api/apiComponents';
+import { apiFinalizeBooks, apiGetEpubUploadUrl, apiTmpBookBundleCreate, apiConfirmUpload } from '~/api/apiComponents';
 import type { FinalizeBooksResponseDto, TmpBookBundleDto } from '~/api/apiSchemas';
 import { isDev } from '~/utils/env';
 
@@ -91,6 +91,13 @@ export function BookUploader() {
       if (!uploadResponse.ok) {
         throw new Error('Failed to upload file to storage');
       }
+
+      // Confirm the upload with the backend
+      await apiConfirmUpload({
+        pathParams: {
+          pendingBookId: uploadUrlResponse.pendingBookId
+        }
+      });
 
       // Add to uploaded books list
       setUploadedBooks(prev => [
