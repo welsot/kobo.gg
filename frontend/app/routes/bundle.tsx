@@ -1,12 +1,12 @@
 import { serverFetch } from '~/utils/serverFetch';
 import type { BookDto } from '~/api/apiSchemas';
-import { Route } from '~/+types/bundle';
+import type { Route } from '~/+types/bundle';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const shortUrlCode = params.shortUrlCode;
   if (!shortUrlCode) {
     return new Response(`<html lang="en"><body><h1>Error: Missing shortUrlCode</h1></body></html>`, {
-      headers: { "Content-Type": "text/html" }
+      headers: { 'Content-Type': 'text/html' },
     });
   }
 
@@ -17,7 +17,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   if (error || !data) {
     return new Response(`<html lang="en"><body><h1>Error</h1><p>${error}</p></body></html>`, {
-      headers: { "Content-Type": "text/html" }
+      headers: { 'Content-Type': 'text/html' },
     });
   }
 
@@ -37,6 +37,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   </body></html>`;
 
   return new Response(html, {
-    headers: { "Content-Type": "text/html" }
+    headers: { 'Content-Type': 'text/html' },
   });
 }
