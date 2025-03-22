@@ -24,10 +24,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const books = data.books
   const expiresAt = new Date(data.expiresAt);
   const expiresAtStr = expiresAt.toLocaleString();
-  const expiresAtEl = `<hr><div>Expires at: <time datetime="${expiresAtStr}">${expiresAtStr}</time></div>`;
+  const expiresAtEl = `<div>Expires: <time datetime="${expiresAtStr}">${expiresAtStr}</time></div>`;
 
   const html = `<html lang="en"><body>
-    <h1>Available Books</h1>
+    <h1><a href="/">Kobo.gg</a> Books</h1>
     ${books.length === 0 ? '<p>No books available</p>' : `
     <ul>
       ${books.map(book => `

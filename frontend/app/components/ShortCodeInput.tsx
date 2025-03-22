@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 
 export function ShortCodeInput() {
   const [shortCode, setShortCode] = useState('');
-  const navigate = useNavigate();
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
     if (shortCode.length >= 4 && shortCode.length <= 8) {
-      navigate(`/${shortCode.trim().toLowerCase()}`);
+      window.location.href = `/${shortCode.trim().toLowerCase()}`;
     }
   };
 
@@ -27,12 +25,12 @@ export function ShortCodeInput() {
           minLength={4}
           maxLength={8}
         />
-        <button
-          type="submit"
+        <a
+          href={`/${shortCode.trim().toLowerCase()}`}
           className="bg-purple-600 text-white px-4 py-2 rounded-r-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
           Go
-        </button>
+        </a>
       </form>
     </div>
   );
