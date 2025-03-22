@@ -21,7 +21,7 @@ export default function Home() {
       <footer className="text-center py-6 text-sm text-gray-600">
         <div className="flex flex-col items-center gap-1">
           <p>
-            &copy; {new Date().getFullYear()} kobo.gg &mdash; Designed and developed by{" "}
+            &copy; {new Date().getFullYear()} kobo.gg &mdash; Developed by{" "}
             <a
               href="https://welsot.com"
               className="font-medium text-purple-600 hover:text-purple-800 transition-colors"

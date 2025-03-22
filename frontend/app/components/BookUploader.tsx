@@ -230,9 +230,9 @@ export function BookUploader() {
         )}
 
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">Upload Books to Your Kobo</h2>
-          <p className="text-gray-600">
-            Select your book files to upload and get a shortcode for your Kobo e-reader
+          <h2 className="text-2xl font-bold text-gray-800 mb-3"><b>Upload</b> Books to Your Kobo</h2>
+          <p className="text-gray-700 text-lg">
+            Select your book files to upload and get a <b>short code</b> for your Kobo e-reader
           </p>
         </div>
 
@@ -389,7 +389,7 @@ export function BookUploader() {
 }
 
 type SuccessConfirmationProps = {
-  finalizationResult?: FinalizeBooksResponseDto;
+  finalizationResult: FinalizeBooksResponseDto|null;
   shortUrl: string|null;
   resetUploader: () => void;
 };
@@ -399,7 +399,6 @@ export function SuccessConfirmation({
                                       shortUrl,
                                       resetUploader,
                                     }: SuccessConfirmationProps) {
-  const code = shortUrl.split('/').pop();
   const [copied, setCopied] = useState(false);
 
   const copyShortUrlToClipboard = () => {

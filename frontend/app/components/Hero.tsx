@@ -1,4 +1,5 @@
 import { BookUploader } from './BookUploader';
+import { ShortCodeInput } from '~/components/ShortCodeInput';
 
 export function Hero() {
   return (
@@ -11,9 +12,12 @@ export function Hero() {
           Send files to your Kobo reader and get instant access to your
           favourite books.
         </p>
+
+        <ShortCodeInput />
         
         <BookUploader />
       </div>
     </section>
   );
 }
+
