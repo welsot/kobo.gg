@@ -1,7 +1,7 @@
 import type { Route } from './+types/home';
 import { Hero } from '~/components/Hero';
 import { Footer } from '~/components/Footer';
-import { redirect } from 'react-router';
+import { redirect, useLoaderData } from 'react-router';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -39,10 +39,10 @@ function koboHtmlTemplate() {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const ua = request.headers.get('User-Agent');
-  if (!ua) return {};
+  if (!ua) return { ua: '(empty)' };
 
   const isEReader = ua.includes('Kobo') || ua.includes('Kindle');
-  if (!isEReader) return {};
+  if (!isEReader) return { ua: ua };
 
   const html = koboHtmlTemplate();
   return new Response(html, {
@@ -62,11 +62,15 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home() {
+  const {ua} = useLoaderData()
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
         <Hero />
       </main>
+      <div className="text-center text-gray-700 text-xl">
+        {ua}
+      </div>
       <Footer />
     </div>
   );
