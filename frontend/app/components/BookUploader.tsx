@@ -191,6 +191,15 @@ export function BookUploader() {
         },
       });
 
+      if (window.plausible) {
+        // Track the custom event in Plausible
+        window.plausible('BooksConfirmed', {
+          props: {
+            bookCount: uploadedBooks.length
+          }
+        });
+      }
+
       setFinalizationResult(result);
       setUploadComplete(true);
       setShowConfirmation(false);

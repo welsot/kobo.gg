@@ -17,6 +17,17 @@ import { UserProvider } from './context/UserContext';
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
+interface PlausibleOptions {
+  callback?: () => void;
+  props?: Record<string, any>;
+}
+
+declare global {
+  interface Window {
+    plausible?: (eventName: string, options?: PlausibleOptions) => void;
+  }
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const requestCookies = request.headers.get('Cookie');
   const apiToken = requestCookies?.split(';').find((c) => c.trim().startsWith('apiToken='))?.split('=')[1];
@@ -59,6 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <Meta />
       <Links />
+      <script defer data-domain="kobo.gg" src="https://plausible.welsot.com/js/script.tagged-events.js"></script>
     </head>
     <body>
     {children}
