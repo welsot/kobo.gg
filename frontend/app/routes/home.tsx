@@ -38,7 +38,7 @@ export default function Home() {
       <div className="text-center text-gray-700 text-xl">
         UserAgent: {ua}
       </div>
-      <Footer ua={ua} />
+      <Footer />
     </div>
   );
 }
