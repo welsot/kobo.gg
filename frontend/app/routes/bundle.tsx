@@ -11,7 +11,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   const { data, error } = await serverFetch<BundleBooksResponse>(
-    `/api/kobo/bundles/${shortUrlCode}/books`,
+    `/api/kobo/bundles/${shortUrlCode.trim().toLowerCase()}/books`,
     request,
   );
 
@@ -23,6 +23,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   
   const books = data.books
   const expiresAt = new Date(data.expiresAt);
+  const expiresAtStr = expiresAt.toLocaleString();
+  const expiresAtEl = `<hr><div>Expires at: <time datetime="${expiresAtStr}">${expiresAtStr}</time></div>`;
 
   const html = `<html lang="en"><body>
     <h1>Available Books</h1>
@@ -38,6 +40,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         </li>
       `).join('')}
     </ul>`}
+    ${expiresAtEl}
   </body></html>`;
 
   return new Response(html, {

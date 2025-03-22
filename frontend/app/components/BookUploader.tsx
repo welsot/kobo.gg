@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpTrayIcon,
+  ArrowRightIcon,
   CheckCircleIcon,
   DocumentIcon,
   ExclamationCircleIcon,
@@ -318,14 +319,14 @@ export function BookUploader() {
             <div className="flex justify-between mt-6">
               <button
                 onClick={() => setShowConfirmation(false)}
-                className="px-5 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+                className="px-8 py-5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
               >
                 Add More Books
               </button>
               <button
                 onClick={handleConfirmUpload}
                 disabled={uploadedBooks.length === 0 || isFinalizing}
-                className={`px-5 py-2 rounded-lg font-medium flex items-center ${
+                className={`px-8 py-5 rounded-lg font-bold flex items-center cursor-pointer ${
                   uploadedBooks.length === 0 || isFinalizing
                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                     : 'bg-purple-600 text-white hover:bg-purple-700'
@@ -337,7 +338,9 @@ export function BookUploader() {
                     <span>Processing...</span>
                   </>
                 ) : (
-                  'Continue'
+                  <>
+                    Continue <ArrowRightIcon className="w-5 h-5 ml-2" />
+                  </>
                 )}
               </button>
             </div>
