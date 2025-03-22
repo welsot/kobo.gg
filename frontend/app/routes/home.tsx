@@ -39,11 +39,13 @@ function koboHtmlTemplate() {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const ua = request.headers.get('User-Agent');
-  if (!ua) return { ua: '(empty)' };
+  const allHeaders = request.headers.entries()
+  const headers = Array.from(allHeaders).map(([k, v]) => `${k}: ${v}`).join('\n');
+  if (!ua) return { ua: '(empty)', headers: headers.split('\n') };
 
   const lcUa = ua.toLowerCase();
   const isEReader = lcUa.includes('kobo') || lcUa.includes('kindle');
-  if (!isEReader) return { ua: ua };
+  if (!isEReader) return { ua: ua, headers: headers.split('\n') };
 
   const html = koboHtmlTemplate();
   return new Response(html, {
@@ -63,7 +65,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home() {
-  const {ua} = useLoaderData()
+  const {ua, headers} = useLoaderData()
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
@@ -71,6 +73,10 @@ export default function Home() {
       </main>
       <div className="text-center text-gray-700 text-xl">
         {ua}
+        <br />
+        <pre>
+        {JSON.stringify(headers, null, 2)}
+        </pre>
       </div>
       <Footer ua={ua} />
     </div>

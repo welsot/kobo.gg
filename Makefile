@@ -47,3 +47,10 @@ cs:
 ts:
 	${FRONTEND} && npm run typecheck
 
+deploy-frontend:
+	docker compose build frontend
+	docker save kobogg/frontend > /tmp/kobogg/frontend.tar
+	rsync -avzh --progress --info=progress2 /tmp/kobogg/frontend.tar puzzlik@puzzlik-app:/home/puzzlik/kobo.gg/docker
+	ssh puzzlik-app "docker load < /home/puzzlik/kobo.gg/docker/frontend.tar"
+	ssh puzzlik-app "cd /home/puzzlik/kobo.gg/repo && docker compose up frontend -d --force-recreate"
+
