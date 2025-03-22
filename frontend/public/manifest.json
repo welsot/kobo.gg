@@ -4,8 +4,8 @@
   "description": "Upload and download ePUB books to your Kobo eReader",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1e293b",
+  "background_color": "#fbf6ff",
+  "theme_color": "#59168b",
   "icons": [
     {
       "src": "/img/icon.64.png",
