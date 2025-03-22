@@ -208,18 +208,6 @@ export function BookUploader() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const copyShortUrlToClipboard = () => {
-    if (shortUrl) {
-      navigator.clipboard.writeText(shortUrl)
-        .then(() => {
-          // You could add a toast notification here
-        })
-        .catch(err => {
-          console.error('Failed to copy URL:', err);
-        });
-    }
-  };
-
   const resetUploader = () => {
     setUploadComplete(false);
     setShowConfirmation(false);
@@ -252,7 +240,6 @@ export function BookUploader() {
           <SuccessConfirmation
             shortUrl={shortUrl}
             resetUploader={resetUploader}
-            copyShortUrlToClipboard={copyShortUrlToClipboard}
             finalizationResult={finalizationResult}
           />
         ) : showConfirmation ? (
@@ -401,18 +388,41 @@ export function BookUploader() {
   );
 }
 
+type SuccessConfirmationProps = {
+  finalizationResult?: FinalizeBooksResponseDto;
+  shortUrl: string|null;
+  resetUploader: () => void;
+};
+
 export function SuccessConfirmation({
                                       finalizationResult,
                                       shortUrl,
-                                      copyShortUrlToClipboard,
                                       resetUploader,
-                                    }) {
+                                    }: SuccessConfirmationProps) {
+  const code = shortUrl.split('/').pop();
+  const [copied, setCopied] = useState(false);
+
+  const copyShortUrlToClipboard = () => {
+    if (shortUrl) {
+      navigator.clipboard.writeText(shortUrl)
+        .then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch(err => {
+          console.error('Failed to copy URL:', err);
+        });
+    }
+  };
+
   return (
     <div className="text-center">
       <div className="flex items-center justify-center mb-6">
         <CheckCircleIcon className="w-20 h-20 text-green-500" />
       </div>
-      <h3 className="text-xl font-semibold text-gray-800 mb-3">Books Ready!</h3>
+      <h3 className="text-xl font-semibold text-gray-800 mb-3">Download them on</h3>
+      <h3 className="text-xl font-semibold text-purple-800 mb-3">{shortUrl}</h3>
+
       {finalizationResult && (
         <p className="text-gray-600 mb-4">
           Successfully
@@ -429,6 +439,7 @@ export function SuccessConfirmation({
         >
           <span className="text-lg font-medium text-purple-800">{shortUrl}</span>
           <LinkIcon className="w-5 h-5 text-purple-600" />
+          {copied && <span className="text-green-500 ml-2 text-sm">Copied!</span>}
         </div>
         <p className="text-sm text-gray-500 mt-2">
           (Click to copy to clipboard)
