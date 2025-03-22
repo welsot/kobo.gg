@@ -54,3 +54,10 @@ deploy-frontend:
 	ssh puzzlik-app "docker load < /home/puzzlik/kobo.gg/docker/frontend.tar"
 	ssh puzzlik-app "cd /home/puzzlik/kobo.gg/repo && docker compose up frontend -d --force-recreate"
 
+deploy-backend:
+	docker compose build backend
+	docker save kobogg/backend > /tmp/kobogg/frontend.tar
+	rsync -avzh --progress --info=progress2 /tmp/kobogg/backend.tar puzzlik@puzzlik-app:/home/puzzlik/kobo.gg/docker
+	ssh puzzlik-app "docker load < /home/puzzlik/kobo.gg/docker/backend.tar"
+	ssh puzzlik-app "cd /home/puzzlik/kobo.gg/repo && docker compose up backend -d --force-recreate"
+
