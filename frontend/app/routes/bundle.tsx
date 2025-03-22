@@ -5,7 +5,7 @@ import type { Route } from '~/+types/bundle';
 export async function loader({ request, params }: Route.LoaderArgs) {
   const shortUrlCode = params.shortUrlCode;
 
-  const title = <h1><a href="/">Kobo.gg</a> Books</h1>;
+  const title = `<h1><a href="/">Kobo.gg</a> Books</h1>`;
 
   if (!shortUrlCode) {
     return new Response(`<html lang="en"><body>${title}<h1>Error: Missing shortUrlCode</h1></body></html>`, {
