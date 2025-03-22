@@ -1,11 +1,14 @@
 import { serverFetch } from '~/utils/serverFetch';
-import type { BookDto, BundleBooksResponse } from '~/api/apiSchemas';
+import type { BundleBooksResponse } from '~/api/apiSchemas';
 import type { Route } from '~/+types/bundle';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const shortUrlCode = params.shortUrlCode;
+
+  const title = <h1><a href="/">Kobo.gg</a> Books</h1>;
+
   if (!shortUrlCode) {
-    return new Response(`<html lang="en"><body><h1>Error: Missing shortUrlCode</h1></body></html>`, {
+    return new Response(`<html lang="en"><body>${title}<h1>Error: Missing shortUrlCode</h1></body></html>`, {
       headers: { 'Content-Type': 'text/html' },
     });
   }
@@ -16,18 +19,18 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   );
 
   if (error || !data) {
-    return new Response(`<html lang="en"><body><h1>Error</h1><p>Likely this url expired.</p><p>${error}</p></body></html>`, {
+    return new Response(`<html lang="en"><body>${title}<h1>Error</h1><p>Likely this url expired.</p><p>${error}</p></body></html>`, {
       headers: { 'Content-Type': 'text/html' },
     });
   }
-  
-  const books = data.books
+
+  const books = data.books;
   const expiresAt = new Date(data.expiresAt);
   const expiresAtStr = expiresAt.toLocaleString();
   const expiresAtEl = `<div>Expires: <time datetime="${expiresAtStr}">${expiresAtStr}</time></div>`;
 
   const html = `<html lang="en"><body>
-    <h1><a href="/">Kobo.gg</a> Books</h1>
+    ${title}
     ${books.length === 0 ? '<p>No books available</p>' : `
     <ul>
       ${books.map(book => `

@@ -1,82 +1,30 @@
-import { Link } from 'react-router';
-
-
 export function Footer() {
   return (
-    <footer className="bg-gray-800 text-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-lg font-semibold mb-4">
-              Kobo.gg
-            </h3>
-            <p className="text-gray-300 text-sm">
-              ...
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link prefetch={'intent'} to="/" className="text-gray-300 hover:text-white text-sm">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  prefetch={'intent'}
-                  to="/about"
-                  className="text-gray-300 hover:text-white text-sm"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  prefetch={'intent'}
-                  to="/contact"
-                  className="text-gray-300 hover:text-white text-sm"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  prefetch={'intent'}
-                  to="/faq"
-                  className="text-gray-300 hover:text-white text-sm"
-                >
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} Kobo.gg All rights reserved.
-          </p>
-          <div className="flex space-x-4 mt-4 md:mt-0">
-            <Link
-              prefetch={'intent'}
-              to="/privacy"
-              className="text-gray-400 hover:text-white text-sm"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              prefetch={'intent'}
-              to="/terms"
-              className="text-gray-400 hover:text-white text-sm"
-            >
-              Terms of Service
-            </Link>
-          </div>
-        </div>
+    <footer className="text-center py-6 text-sm text-gray-600">
+      <div className="flex flex-col items-center gap-1">
+        <p>
+          &copy; {new Date().getFullYear()} kobo.gg &mdash; Developed by{' '}
+          <a
+            href="https://welsot.com"
+            className="font-medium text-purple-600 hover:text-purple-800 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Welsot Solutions
+          </a>
+        </p>
+        <p className="text-xs text-gray-500">
+          Open source on{' '}
+          <a
+            href="https://github.com/welsot/kobo.gg"
+            className="text-gray-700 hover:text-purple-700 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+          {' '}&middot;{' '}All rights reserved
+        </p>
       </div>
     </footer>
   );
