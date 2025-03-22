@@ -96,8 +96,8 @@ export function BookUploader() {
       // Confirm the upload with the backend
       await apiConfirmUpload({
         pathParams: {
-          pendingBookId: uploadUrlResponse.pendingBookId
-        }
+          pendingBookId: uploadUrlResponse.pendingBookId,
+        },
       });
 
       // Add to uploaded books list
@@ -180,17 +180,17 @@ export function BookUploader() {
 
   const handleConfirmUpload = async () => {
     if (!bookBundle) return;
-    
+
     setIsFinalizing(true);
     setError(null);
-    
+
     try {
       const result = await apiFinalizeBooks({
         body: {
-          tmpBookBundleId: bookBundle.id
-        }
+          tmpBookBundleId: bookBundle.id,
+        },
       });
-      
+
       setFinalizationResult(result);
       setUploadComplete(true);
       setShowConfirmation(false);
@@ -249,38 +249,12 @@ export function BookUploader() {
         </div>
 
         {uploadComplete ? (
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-6">
-              <CheckCircleIcon className="w-20 h-20 text-green-500" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Books Ready!</h3>
-            {finalizationResult && (
-              <p className="text-gray-600 mb-4">
-                Successfully processed {finalizationResult.convertedCount} book{finalizationResult.convertedCount !== 1 ? 's' : ''}.
-              </p>
-            )}
-            <div className="mb-6">
-              <p className="text-gray-600 mb-2">
-                Use this URL on your Kobo e-reader to download your books:
-              </p>
-              <div
-                className="flex items-center justify-center gap-2 p-4 bg-purple-50 rounded-lg border border-purple-200 cursor-pointer"
-                onClick={copyShortUrlToClipboard}
-              >
-                <span className="text-lg font-medium text-purple-800">{shortUrl}</span>
-                <LinkIcon className="w-5 h-5 text-purple-600" />
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                (Click to copy to clipboard)
-              </p>
-            </div>
-            <button
-              onClick={resetUploader}
-              className="mt-4 text-purple-600 font-medium hover:text-purple-800"
-            >
-              Upload more books
-            </button>
-          </div>
+          <SuccessConfirmation
+            shortUrl={shortUrl}
+            resetUploader={resetUploader}
+            copyShortUrlToClipboard={copyShortUrlToClipboard}
+            finalizationResult={finalizationResult}
+          />
         ) : showConfirmation ? (
           <div>
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Review Uploaded Books</h3>
@@ -316,17 +290,17 @@ export function BookUploader() {
               </div>
             </div>
 
-            <div className="flex justify-between mt-6">
+            <div className="flex flex-col sm:flex-row justify-between gap-4 sm:gap-0 mt-6">
               <button
                 onClick={() => setShowConfirmation(false)}
-                className="px-8 py-5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+                className="px-4 py-3 sm:px-8 sm:py-5 border border-gray-300 rounded-lg text-gray-700 text-sm sm:text-base font-medium hover:bg-gray-50"
               >
                 Add More Books
               </button>
               <button
                 onClick={handleConfirmUpload}
                 disabled={uploadedBooks.length === 0 || isFinalizing}
-                className={`px-8 py-5 rounded-lg font-bold flex items-center cursor-pointer ${
+                className={`px-4 py-3 sm:px-8 sm:py-5 rounded-lg text-sm sm:text-base font-bold flex items-center justify-center cursor-pointer ${
                   uploadedBooks.length === 0 || isFinalizing
                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                     : 'bg-purple-600 text-white hover:bg-purple-700'
@@ -339,7 +313,7 @@ export function BookUploader() {
                   </>
                 ) : (
                   <>
-                    Continue <ArrowRightIcon className="w-5 h-5 ml-2" />
+                    Continue <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                   </>
                 )}
               </button>
@@ -423,6 +397,49 @@ export function BookUploader() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+export function SuccessConfirmation({
+                                      finalizationResult,
+                                      shortUrl,
+                                      copyShortUrlToClipboard,
+                                      resetUploader,
+                                    }) {
+  return (
+    <div className="text-center">
+      <div className="flex items-center justify-center mb-6">
+        <CheckCircleIcon className="w-20 h-20 text-green-500" />
+      </div>
+      <h3 className="text-xl font-semibold text-gray-800 mb-3">Books Ready!</h3>
+      {finalizationResult && (
+        <p className="text-gray-600 mb-4">
+          Successfully
+          processed {finalizationResult.convertedCount} book{finalizationResult.convertedCount !== 1 ? 's' : ''}.
+        </p>
+      )}
+      <div className="mb-6">
+        <p className="text-gray-600 mb-2">
+          Use this URL on your Kobo e-reader to download your books:
+        </p>
+        <div
+          className="flex items-center justify-center gap-2 p-4 bg-purple-50 rounded-lg border border-purple-200 cursor-pointer"
+          onClick={copyShortUrlToClipboard}
+        >
+          <span className="text-lg font-medium text-purple-800">{shortUrl}</span>
+          <LinkIcon className="w-5 h-5 text-purple-600" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">
+          (Click to copy to clipboard)
+        </p>
+      </div>
+      <button
+        onClick={resetUploader}
+        className="mt-4 text-purple-600 font-medium hover:text-purple-800"
+      >
+        Upload more books
+      </button>
     </div>
   );
 }
