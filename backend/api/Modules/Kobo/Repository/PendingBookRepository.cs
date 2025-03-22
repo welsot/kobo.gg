@@ -50,12 +50,20 @@ public class PendingBookRepository : BaseRepository<PendingBook>, IPendingBookRe
             .Where(pb => pb.ExpiresAt < now)
             .CountAsync(cancellationToken);
     }
+    
+    public async Task<IList<PendingBook>> GetExpiredAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        return await _context.PendingBooks
+            .Where(pb => pb.ExpiresAt < now)
+            .ToListAsync(cancellationToken);
+    }
 
     public async Task DeleteExpiredAsync(CancellationToken cancellationToken = default)
     {
         var now = DateTime.UtcNow;
         await _context.PendingBooks
-            .Where(otp => otp.ExpiresAt < now)
+            .Where(pb => pb.ExpiresAt < now)
             .ExecuteDeleteAsync(cancellationToken);
     }
     

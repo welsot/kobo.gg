@@ -1,4 +1,5 @@
 using api.Modules.Kobo.Repository;
+using api.Modules.Storage.Services;
 
 namespace api.Modules.Kobo.Services;
 
@@ -41,15 +42,51 @@ public class PendingBookCleanupService : BackgroundService
 
         using var scope = _scopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IPendingBookRepository>();
+        var s3Service = scope.ServiceProvider.GetRequiredService<IS3Service>();
 
-        // First find the expired pending books to log the count
+        // First find the expired pending books
         var expiredCount = await repository.CountExpiredAsync(cancellationToken);
 
         if (expiredCount > 0)
         {
-            _logger.LogInformation("Removing {Count} expired pending books", expiredCount);
+            _logger.LogInformation("Found {Count} expired pending books to clean up", expiredCount);
+            
+            // Get the expired books to access their S3 keys
+            var expiredBooks = await repository.GetExpiredAsync(cancellationToken);
+            
+            // Collect all S3 keys (both original and kepub if exists)
+            var s3KeysToDelete = new List<string>();
+            
+            foreach (var book in expiredBooks)
+            {
+                s3KeysToDelete.Add(book.S3Key);
+                
+                if (!string.IsNullOrEmpty(book.KepubS3Key))
+                {
+                    s3KeysToDelete.Add(book.KepubS3Key);
+                }
+            }
+            
+            // Delete the files from S3
+            if (s3KeysToDelete.Any())
+            {
+                try
+                {
+                    _logger.LogInformation("Deleting {Count} files from S3", s3KeysToDelete.Count);
+                    var deletedKeys = await s3Service.DeleteObjectsAsync(s3KeysToDelete);
+                    _logger.LogInformation("Successfully deleted {Count} files from S3", deletedKeys.Count);
+                }
+                catch (Exception ex)
+                {
+                    // Log but continue with DB cleanup even if S3 deletion fails
+                    _logger.LogError(ex, "Error deleting files from S3");
+                }
+            }
+            
+            // Now delete the records from the database
+            _logger.LogInformation("Removing expired pending books from database");
             await repository.DeleteExpiredAsync(cancellationToken);
-            _logger.LogInformation("Completed removal of expired pending books");
+            _logger.LogInformation("Completed cleanup of expired pending books");
         }
         else
         {

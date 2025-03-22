@@ -30,5 +30,19 @@ namespace api.Modules.Storage.Services
         /// <param name="key">The object key (file path in the bucket)</param>
         /// <returns>The file size in bytes, or null if the object doesn't exist</returns>
         Task<long?> GetFileSizeAsync(string key);
+        
+        /// <summary>
+        /// Deletes an object from S3
+        /// </summary>
+        /// <param name="key">The object key (file path in the bucket)</param>
+        /// <returns>True if deleted successfully, false if the object doesn't exist</returns>
+        Task<bool> DeleteObjectAsync(string key);
+        
+        /// <summary>
+        /// Deletes multiple objects from S3
+        /// </summary>
+        /// <param name="keys">List of object keys to delete</param>
+        /// <returns>List of keys that were successfully deleted</returns>
+        Task<IList<string>> DeleteObjectsAsync(IEnumerable<string> keys);
     }
 }

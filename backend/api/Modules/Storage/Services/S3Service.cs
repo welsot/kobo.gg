@@ -102,5 +102,57 @@ namespace api.Modules.Storage.Services
                 throw;
             }
         }
+        
+        public async Task<bool> DeleteObjectAsync(string key)
+        {
+            try
+            {
+                var deleteRequest = new DeleteObjectRequest
+                {
+                    BucketName = _s3Settings.BucketName,
+                    Key = key
+                };
+                
+                await s3Client.DeleteObjectAsync(deleteRequest);
+                return true;
+            }
+            catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                // Object not found, consider it already deleted
+                return false;
+            }
+            catch
+            {
+                // Re-throw other exceptions
+                throw;
+            }
+        }
+        
+        public async Task<IList<string>> DeleteObjectsAsync(IEnumerable<string> keys)
+        {
+            try
+            {
+                var keyObjects = keys.Select(k => new KeyVersion { Key = k }).ToList();
+                
+                if (!keyObjects.Any())
+                {
+                    return new List<string>();
+                }
+                
+                var deleteRequest = new DeleteObjectsRequest
+                {
+                    BucketName = _s3Settings.BucketName,
+                    Objects = keyObjects
+                };
+                
+                var response = await s3Client.DeleteObjectsAsync(deleteRequest);
+                return response.DeletedObjects.Select(o => o.Key).ToList();
+            }
+            catch
+            {
+                // Re-throw exceptions
+                throw;
+            }
+        }
     }
 }
