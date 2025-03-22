@@ -28,10 +28,10 @@ function koboHtmlTemplate() {
     </head>
     <body>
       <h1>Kobo.gg</h1>
-      <p>Enter your download code:</p>
+      <p>Enter your short code:</p>
       <form method="post">
         <input type="text" name="shortCode" placeholder="Enter code here" required>
-        <button type="submit">Download Book</button>
+        <button type="submit">Open</button>
       </form>
     </body>
   </html>`;
@@ -41,7 +41,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const ua = request.headers.get('User-Agent');
   if (!ua) return { ua: '(empty)' };
 
-  const isEReader = ua.includes('Kobo') || ua.includes('Kindle');
+  const lcUa = ua.toLowerCase();
+  const isEReader = lcUa.includes('kobo') || lcUa.includes('kindle');
   if (!isEReader) return { ua: ua };
 
   const html = koboHtmlTemplate();
@@ -71,7 +72,7 @@ export default function Home() {
       <div className="text-center text-gray-700 text-xl">
         {ua}
       </div>
-      <Footer />
+      <Footer ua={ua} />
     </div>
   );
 }

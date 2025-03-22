@@ -1,4 +1,4 @@
-export function Footer() {
+export function Footer({ua}: {ua?: string|null}) {
   return (
     <footer className="text-center py-6 text-sm text-gray-600">
       <div className="flex flex-col items-center gap-1">
@@ -23,7 +23,7 @@ export function Footer() {
           >
             GitHub
           </a>
-          {' '}&middot;{' '}All rights reserved
+          {' '}&middot;{' '}All rights reserved {ua}
         </p>
       </div>
     </footer>
