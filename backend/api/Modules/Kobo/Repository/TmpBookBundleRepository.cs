@@ -29,4 +29,32 @@ public class TmpBookBundleRepository : BaseRepository<TmpBookBundle>, ITmpBookBu
     {
         return await _context.TmpBookBundles.AnyAsync(b => b.ShortUrlCode == shortUrlCode);
     }
+    
+    public async Task<int> CountExpiredAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        return await _context.TmpBookBundles
+            .Where(b => b.ExpiresAt < now)
+            .CountAsync(cancellationToken);
+    }
+    
+    public async Task<List<TmpBookBundle>> GetExpiredAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        return await _context.TmpBookBundles
+            .Include(b => b.Books)
+            .Where(b => b.ExpiresAt < now)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public async Task DeleteExpiredAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        var expiredBundles = await _context.TmpBookBundles
+            .Where(b => b.ExpiresAt < now)
+            .ToListAsync(cancellationToken);
+            
+        _context.TmpBookBundles.RemoveRange(expiredBundles);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

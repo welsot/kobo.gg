@@ -30,6 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<EpubConverter>();
 
             services.AddHostedService<PendingBookCleanupService>();
+            services.AddHostedService<TmpBookBundleCleanupService>();
 
             return services;
         }
