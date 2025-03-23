@@ -77,7 +77,7 @@ export function BookUploader() {
       });
 
       const signedUrl = isDev
-        ? uploadUrlResponse.url.replace('https://', 'http://')
+        ? uploadUrlResponse.url.replace('http://localhost:4566', 'https://legally-ideal-macaw.ngrok-free.app')
         : uploadUrlResponse.url;
 
       // Upload file to the signed URL

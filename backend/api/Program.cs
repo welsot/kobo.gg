@@ -89,7 +89,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseCors(corsBuilder => corsBuilder
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins("http://localhost:3000", "http://localhost:1420", "http://tauri.localhost")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());

@@ -1,0 +1,55 @@
+{
+  "$schema": "../gen/schemas/mobile-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "platforms": [
+    "android"
+  ],
+  "windows": [
+    "main"
+  ],
+  "capabilities": [
+    {
+      "identifier": "kobogg",
+      "description": "KoboGG app main window global capabilities",
+      "windows": [
+        "main"
+      ],
+      "permissions": [
+        "log:default",
+        "log:allow-log",
+        "core:path:default",
+        "dialog:default",
+        "fs:read-all",
+        "fs:read-meta",
+        {
+          "identifier": "http:default",
+          "allow": [
+            [
+              {
+                "url": "http://*"
+              },
+              {
+                "url": "https://*"
+              },
+              {
+                "url": "http://*:*"
+              },
+              {
+                "url": "https://*:*"
+              }
+            ]
+          ],
+          "deny": []
+        },
+        "upload:default"
+      ],
+      "scope": [
+        "*"
+      ]
+    }
+  ],
+  "permissions": [
+    "upload:default"
+  ]
+}
