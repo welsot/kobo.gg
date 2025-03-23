@@ -27,8 +27,6 @@ tauri-plugin-http = "2"
 tauri-plugin-log = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-upload = "2"
-openssl = { version = "0.10.71", features = ["vendored"] }
-reqwest = "0.12.15"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
