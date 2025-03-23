@@ -47,7 +47,6 @@ export class HttpClient {
       [key: string]: string;
     };
     const headers: HeadersType = {
-      'X-Tunnel-Skip-AntiPhishing-Page': 'true',
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };

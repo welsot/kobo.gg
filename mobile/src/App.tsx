@@ -10,7 +10,7 @@ import type { TmpBookBundleDto } from "./api/apiSchemas";
 import Header from './components/Header';
 import Footer from './components/Footer';
 import "./App.css";
-import { isDev } from "./utils/env";
+import { isDev, apiUrl } from "./utils/env";
 
 const determineFileType = (fileName: string): string => {
   if (fileName.endsWith('.epub')) return 'application/epub+zip';
@@ -51,7 +51,7 @@ function App() {
         setUploadedBooks(JSON.parse(storedBooks));
       }
     } catch (err) {
-      setError('Failed to create temporary book bundle. Please try again.');
+      setError(apiUrl + ': failed to create temporary book bundle. Please try again. ' + JSON.stringify(err));
       console.error(JSON.stringify(err));
       throw err;
     } finally {
