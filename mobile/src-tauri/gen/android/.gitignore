@@ -1,4 +1,4 @@
-./keystore.properties
+keystore.properties
 
 *.iml
 .gradle
