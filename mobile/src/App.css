@@ -675,6 +675,68 @@ html, body {
   text-decoration: underline;
 }
 
+/* success screen error */
+
+.sse-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.sse-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+}
+
+.sse-icon {
+  width: 48px;
+  height: 48px;
+  color: #e63946;
+  margin-bottom: 1rem;
+}
+
+.sse-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.sse-message {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+.sse-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.sse-button:hover {
+  background-color: #0056b3;
+}
+
+.sse-button-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
 /* Responsive adaptations */
 @media (max-width: 480px) {
   .book-uploader-container {

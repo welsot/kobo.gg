@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
@@ -22,8 +22,7 @@ export function BookList() {
   const { 
     bookBundle,
     uploadedBooks, 
-    removeBook, 
-    clearBooks,
+    removeBook,
     setFinalizationResult,
     setShortUrl
   } = useBookStore();
@@ -33,11 +32,6 @@ export function BookList() {
     navigate('/');
     return null;
   }
-  
-  // Clean up any residual upload state when viewing book list
-  useEffect(() => {
-    useBookStore.getState().resetUploadState();
-  }, []);
 
   const deleteBook = (bookId: string) => {
     removeBook(bookId);
@@ -79,12 +73,8 @@ export function BookList() {
         });
       }
 
-      // Store results in Zustand
       setFinalizationResult(result);
       setShortUrl(`kobo.gg/${bookBundle.shortUrlCode}`);
-      
-      // Clear uploaded books from store
-      clearBooks();
       
       // Navigate to success screen
       navigate('/success');

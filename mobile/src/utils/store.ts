@@ -72,4 +72,11 @@ export const useBookStore = create<BookState>()((set) => ({
     uploadProgress: 0, 
     currentFileName: "" 
   }),
+  resetAll: () => set({
+    isUploading: false,
+    uploadProgress: 0,
+    currentFileName: "",
+    finalizationResult: null,
+    bookBundle: null,
+  }),
 }));

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
-import { 
+import { SuccessScreenError } from './SuccessScreenError';
+import {
   CheckCircleIcon, 
   DocumentDuplicateIcon, 
   ArrowPathIcon,
@@ -21,28 +22,9 @@ export function SuccessScreen() {
     shortUrl, 
     setBookBundle,
     setFinalizationResult, 
-    setShortUrl
+    setShortUrl,
+    resetAll
   } = useBookStore();
-
-  useEffect(() => {
-    // If no result or shortUrl, redirect to home
-    if (!finalizationResult || !shortUrl) {
-      navigate('/');
-    }
-    
-    // Clean up any residual upload state
-    useBookStore.getState().resetUploadState();
-
-    // Clean up function to reset finalization state when leaving the page
-    return () => {
-      setFinalizationResult(null);
-      setShortUrl(null);
-      setBookBundle(null);
-      
-      // Ensure upload state is clean on unmount
-      useBookStore.getState().resetUploadState();
-    };
-  }, [navigate, finalizationResult, shortUrl, setFinalizationResult, setShortUrl, setBookBundle]);
 
   // Extract the short code from the URL
   const shortCode = shortUrl ? shortUrl.split('/').pop() || '' : '';
@@ -61,11 +43,12 @@ export function SuccessScreen() {
   };
 
   const handleUploadMore = () => {
+    resetAll();
     navigate('/');
   };
 
   if (!finalizationResult || !shortUrl) {
-    return null; // Will redirect in useEffect
+    return <SuccessScreenError/>;
   }
 
   // Animated background particles

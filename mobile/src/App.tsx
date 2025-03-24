@@ -35,7 +35,9 @@ function App() {
     addBook,
     isUploading, setIsUploading,
     uploadProgress, setUploadProgress,
-    currentFileName, setCurrentFileName
+    currentFileName, setCurrentFileName,
+    setFinalizationResult,
+    setShortUrl
   } = useBookStore();
 
   const createTmpBookBundle = async (showLoading = false) => {
@@ -66,6 +68,10 @@ function App() {
     
     // Reset upload state when component mounts
     useBookStore.getState().resetUploadState();
+
+    // reset success screen state if it was defined
+    setFinalizationResult(null);
+    setShortUrl(null);
   }, []);
 
   const uploadFile = async (filePath: string): Promise<void> => {
@@ -177,6 +183,8 @@ function App() {
     setIsUploading(true);
     setError(null);
 
+    let uploadedCount = 0;
+
     try {
       // Open file dialog
       const selected = await open({
@@ -197,11 +205,11 @@ function App() {
         // Multiple files selected
         for (const path of selected) {
           await uploadFile(path);
+          uploadedCount++
         }
       }
 
-      if (uploadedBooks.length > 0) {
-        // Reset upload state before navigation
+      if (uploadedCount > 0 || uploadedBooks.length > 0) {
         useBookStore.getState().resetUploadState();
         navigate('/book-list');
       }
