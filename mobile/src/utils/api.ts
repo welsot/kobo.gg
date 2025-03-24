@@ -37,7 +37,7 @@ export class HttpClient {
     };
 
     const finalUrl = `${BASE_API_URL}${url}`;
-    const res = fetch(finalUrl, { ...finalInit, credentials: 'include' });
+    const res = fetch(finalUrl, finalInit);
 
     return res;
   }

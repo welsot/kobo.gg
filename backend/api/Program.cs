@@ -89,12 +89,14 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseCors(corsBuilder => corsBuilder
-            .WithOrigins("http://localhost:3000", "http://localhost:1420", "http://tauri.localhost")
+            .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials());
+            .AllowCredentials()
+        );
 
         app.MapGet("/health", () => Results.Ok("Healthy"));
+        app.MapGet("/api/version", () => Results.Ok("mar24_0551"));
             
         app.MapControllers();
 
