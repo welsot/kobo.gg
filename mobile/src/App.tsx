@@ -183,12 +183,6 @@ function App() {
       // Open file dialog
       const selected = await open({
         multiple: true,
-        filters: [
-          {
-            name: 'E-book files',
-            extensions: ['epub', 'mobi', 'pdf', 'txt', 'cbz', 'cbr'],
-          },
-        ],
       });
 
       if (selected === null) {
