@@ -23,7 +23,8 @@ const determineFileType = (fileName: string): string => {
 };
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   
@@ -37,9 +38,12 @@ function App() {
     currentFileName, setCurrentFileName
   } = useBookStore();
 
-  const createTmpBookBundle = async () => {
-    setIsLoading(true);
+  const createTmpBookBundle = async (showLoading = false) => {
+    if (showLoading) {
+      setIsLoading(true);
+    }
     setError(null);
+    
     try {
       const bundle = await apiTmpBookBundleCreate();
       setBookBundle(bundle);
@@ -48,13 +52,17 @@ function App() {
       console.error(JSON.stringify(err));
       throw err;
     } finally {
-      setIsLoading(false);
+      if (showLoading) {
+        setIsLoading(false);
+      }
+      setIsInitialLoad(false);
     }
   };
 
   // Create a temporary book bundle when component mounts
+  // without showing loading indicator on initial load
   useEffect(() => {
-    createTmpBookBundle();
+    createTmpBookBundle(false);
   }, []);
 
   const uploadFile = async (filePath: string): Promise<void> => {
@@ -202,9 +210,7 @@ function App() {
   };
 
   const onRetry = () => {
-    setError(null);
-    setIsLoading(true);
-    createTmpBookBundle();
+    createTmpBookBundle(true);
   };
 
   // Animated background particles
