@@ -6,11 +6,11 @@ import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpenIcon, ArrowUpTrayIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { apiConfirmUpload, apiGetEpubUploadUrl, apiTmpBookBundleCreate } from "./api/apiComponents";
-import type { TmpBookBundleDto } from "./api/apiSchemas";
 import Header from './components/Header';
 import Footer from './components/Footer';
 import "./App.css";
 import { isDev, apiUrl } from "./utils/env";
+import { useBookStore } from "./utils/store";
 
 const determineFileType = (fileName: string): string => {
   if (fileName.endsWith('.epub')) return 'application/epub+zip';
@@ -22,22 +22,20 @@ const determineFileType = (fileName: string): string => {
   return 'application/octet-stream';
 };
 
-interface UploadedBook {
-  id: string;
-  name: string;
-  key: string;
-  size: number;
-}
-
 function App() {
-  const [bookBundle, setBookBundle] = useState<TmpBookBundleDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [uploadedBooks, setUploadedBooks] = useState<UploadedBook[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [currentFileName, setCurrentFileName] = useState<string>("");
   const navigate = useNavigate();
+  
+  // Use Zustand store
+  const {
+    bookBundle, setBookBundle,
+    uploadedBooks,
+    addBook,
+    isUploading, setIsUploading,
+    uploadProgress, setUploadProgress,
+    currentFileName, setCurrentFileName
+  } = useBookStore();
 
   const createTmpBookBundle = async () => {
     setIsLoading(true);
@@ -45,11 +43,6 @@ function App() {
     try {
       const bundle = await apiTmpBookBundleCreate();
       setBookBundle(bundle);
-      // Get any books that might have been stored in local storage
-      const storedBooks = localStorage.getItem('uploadedBooks');
-      if (storedBooks) {
-        setUploadedBooks(JSON.parse(storedBooks));
-      }
     } catch (err) {
       setError(apiUrl + ': failed to create temporary book bundle. Please try again. ' + JSON.stringify(err));
       console.error(JSON.stringify(err));
@@ -153,18 +146,12 @@ function App() {
         },
       });
 
-      // Add to uploaded books list
-      const newBook = {
+      // Add to uploaded books using Zustand
+      addBook({
         id: uploadUrlResponse.pendingBookId,
         name: fileName,
         key: uploadUrlResponse.key,
         size: fileSize,
-      };
-
-      setUploadedBooks(prev => {
-        const updatedBooks = [...prev, newBook];
-        localStorage.setItem('uploadedBooks', JSON.stringify(updatedBooks));
-        return updatedBooks;
       });
 
     } catch (err) {
@@ -203,7 +190,7 @@ function App() {
       }
 
       if (uploadedBooks.length > 0) {
-        navigate('/book-list', { state: { bookBundle } });
+        navigate('/book-list');
       }
 
     } catch (err) {
@@ -366,7 +353,7 @@ function App() {
               <p><span className="book-count">{uploadedBooks.length}</span> {uploadedBooks.length > 1 ? 'books' : 'book'} selected</p>
               <motion.button
                 className="continue-button"
-                onClick={() => navigate('/book-list', { state: { bookBundle } })}
+                onClick={() => navigate('/book-list')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

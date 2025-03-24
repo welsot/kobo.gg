@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
@@ -9,21 +9,34 @@ import {
   ArrowPathIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
-import type { FinalizeBooksResponseDto } from '../api/apiSchemas';
+import { useBookStore } from '../utils/store';
 
 export function SuccessScreen() {
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-  const finalizationResult = location.state?.finalizationResult as FinalizeBooksResponseDto;
-  const shortUrl = location.state?.shortUrl as string;
+  
+  // Use Zustand store
+  const { 
+    finalizationResult, 
+    shortUrl, 
+    setBookBundle,
+    setFinalizationResult, 
+    setShortUrl
+  } = useBookStore();
 
   useEffect(() => {
     // If no result or shortUrl, redirect to home
     if (!finalizationResult || !shortUrl) {
       navigate('/');
     }
-  }, [navigate, finalizationResult, shortUrl]);
+
+    // Clean up function to reset finalization state when leaving the page
+    return () => {
+      setFinalizationResult(null);
+      setShortUrl(null);
+      setBookBundle(null);
+    };
+  }, [navigate, finalizationResult, shortUrl, setFinalizationResult, setShortUrl, setBookBundle]);
 
   // Extract the short code from the URL
   const shortCode = shortUrl ? shortUrl.split('/').pop() || '' : '';

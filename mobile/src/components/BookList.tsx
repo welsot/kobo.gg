@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
@@ -11,43 +11,34 @@ import {
   ExclamationTriangleIcon 
 } from '@heroicons/react/24/outline';
 import { apiFinalizeBooks } from '../api/apiComponents';
-import type { TmpBookBundleDto } from '../api/apiSchemas';
-
-interface UploadedBook {
-  id: string;
-  name: string;
-  key: string;
-  size: number;
-}
+import { useBookStore } from '../utils/store';
 
 export function BookList() {
-  const [uploadedBooks, setUploadedBooks] = useState<UploadedBook[]>([]);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
-  const bookBundle = location.state?.bookBundle as TmpBookBundleDto;
 
-  useEffect(() => {
-    // Retrieve uploaded books from localStorage
-    const storedBooks = localStorage.getItem('uploadedBooks');
-    if (storedBooks) {
-      setUploadedBooks(JSON.parse(storedBooks));
-    }
+  // Use Zustand store
+  const { 
+    bookBundle,
+    uploadedBooks, 
+    removeBook, 
+    clearBooks,
+    setFinalizationResult,
+    setShortUrl
+  } = useBookStore();
 
-    // If no bookBundle in state, try to get from localStorage
-    if (!bookBundle) {
-      navigate('/');
-    }
-  }, [navigate, bookBundle]);
+  // If no bookBundle, redirect to home
+  if (!bookBundle) {
+    navigate('/');
+    return null;
+  }
 
   const deleteBook = (bookId: string) => {
-    const updatedBooks = uploadedBooks.filter(book => book.id !== bookId);
-    setUploadedBooks(updatedBooks);
-    localStorage.setItem('uploadedBooks', JSON.stringify(updatedBooks));
+    removeBook(bookId);
     
     // If no books left, go back to upload screen
-    if (updatedBooks.length === 0) {
+    if (uploadedBooks.length <= 1) {
       navigate('/');
     }
   };
@@ -83,16 +74,15 @@ export function BookList() {
         });
       }
 
-      // Navigate to success screen with result and shortUrlCode
-      navigate('/success', { 
-        state: { 
-          finalizationResult: result,
-          shortUrl: `kobo.gg/${bookBundle.shortUrlCode}`
-        } 
-      });
+      // Store results in Zustand
+      setFinalizationResult(result);
+      setShortUrl(`kobo.gg/${bookBundle.shortUrlCode}`);
       
-      // Clear uploaded books from localStorage
-      localStorage.removeItem('uploadedBooks');
+      // Clear uploaded books from store
+      clearBooks();
+      
+      // Navigate to success screen
+      navigate('/success');
     } catch (err) {
       console.error('Failed to finalize books:', err);
       setError('Failed to finalize your books. Please try again.');
