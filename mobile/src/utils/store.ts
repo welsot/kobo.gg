@@ -35,6 +35,7 @@ interface BookState {
   
   // Helper functions
   resetUploadState: () => void;
+  resetAll: () => void;
 }
 
 export const useBookStore = create<BookState>()((set) => ({

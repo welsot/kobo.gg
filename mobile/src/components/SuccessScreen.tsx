@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
@@ -19,10 +19,7 @@ export function SuccessScreen() {
   // Use Zustand store
   const { 
     finalizationResult, 
-    shortUrl, 
-    setBookBundle,
-    setFinalizationResult, 
-    setShortUrl,
+    shortUrl,
     resetAll
   } = useBookStore();
 

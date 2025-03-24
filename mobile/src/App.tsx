@@ -24,7 +24,6 @@ const determineFileType = (fileName: string): string => {
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   
@@ -57,7 +56,6 @@ function App() {
       if (showLoading) {
         setIsLoading(false);
       }
-      setIsInitialLoad(false);
     }
   };
 
