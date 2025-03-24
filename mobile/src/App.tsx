@@ -63,6 +63,9 @@ function App() {
   // without showing loading indicator on initial load
   useEffect(() => {
     createTmpBookBundle(false);
+    
+    // Reset upload state when component mounts
+    useBookStore.getState().resetUploadState();
   }, []);
 
   const uploadFile = async (filePath: string): Promise<void> => {
@@ -198,6 +201,8 @@ function App() {
       }
 
       if (uploadedBooks.length > 0) {
+        // Reset upload state before navigation
+        useBookStore.getState().resetUploadState();
         navigate('/book-list');
       }
 
@@ -205,7 +210,7 @@ function App() {
       console.error('File selection error:', err);
       setError('Failed to upload one or more files. Please try again. Err: ' + JSON.stringify(err));
     } finally {
-      setIsUploading(false);
+      useBookStore.getState().resetUploadState();
     }
   };
 

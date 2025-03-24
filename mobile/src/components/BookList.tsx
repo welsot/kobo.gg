@@ -33,6 +33,11 @@ export function BookList() {
     navigate('/');
     return null;
   }
+  
+  // Clean up any residual upload state when viewing book list
+  useEffect(() => {
+    useBookStore.getState().resetUploadState();
+  }, []);
 
   const deleteBook = (bookId: string) => {
     removeBook(bookId);

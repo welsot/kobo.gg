@@ -29,12 +29,18 @@ export function SuccessScreen() {
     if (!finalizationResult || !shortUrl) {
       navigate('/');
     }
+    
+    // Clean up any residual upload state
+    useBookStore.getState().resetUploadState();
 
     // Clean up function to reset finalization state when leaving the page
     return () => {
       setFinalizationResult(null);
       setShortUrl(null);
       setBookBundle(null);
+      
+      // Ensure upload state is clean on unmount
+      useBookStore.getState().resetUploadState();
     };
   }, [navigate, finalizationResult, shortUrl, setFinalizationResult, setShortUrl, setBookBundle]);
 
