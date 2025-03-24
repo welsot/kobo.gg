@@ -99,8 +99,15 @@ function App() {
       setCurrentFileName(fileName);
       setUploadProgress(0);
 
+      // timeout to reset the uploading if we stuck at reading file
+      const stuckTimeout = setTimeout(() => {
+          alert('Error reading file.. Maybe it is too large? Please try again');
+          useBookStore.getState().resetUploadState();
+      }, 5000);
+
       // Read the file contents using Tauri's fs plugin
       const fileContent = await readFile(filePath);
+      clearTimeout(stuckTimeout);
       setUploadProgress(1);
       const fileSize = fileContent.length; // Use the array length as file size
 
@@ -115,13 +122,21 @@ function App() {
         },
       });
 
+      setUploadProgress(2);
+
       let finalUrl = uploadUrlResponse.url;
       if (isDev) {
         finalUrl = finalUrl.replace('http://localhost:4566', 'https://legally-ideal-macaw.ngrok-free.app');
       }
 
+      const stuckTimeout2 = setTimeout(() => {
+                alert('Error reading file.. Maybe it is too large? Please try again');
+                useBookStore.getState().resetUploadState();
+            }, 5000);
       // Create a Blob from the file content
       const blob = new Blob([fileContent], { type: fileType });
+      clearTimeout(stuckTimeout2);
+      setUploadProgress(3);
 
       // Upload the file with progress tracking
       try {
@@ -154,6 +169,7 @@ function App() {
           xhr.send(blob);
         });
       } catch (error) {
+        useBookStore.getState().resetUploadState();
         console.error('Upload failed:' + JSON.stringify(error));
         throw error;
       }

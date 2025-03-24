@@ -78,5 +78,6 @@ export const useBookStore = create<BookState>()((set) => ({
     currentFileName: "",
     finalizationResult: null,
     bookBundle: null,
+    uploadedBooks: []
   }),
 }));
