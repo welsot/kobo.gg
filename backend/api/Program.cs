@@ -88,14 +88,19 @@ public class Program
         app.UseMiddleware<ApiExceptionMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseCors(corsBuilder => corsBuilder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-        );
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseCors(corsBuilder => corsBuilder
+                .WithOrigins("http://localhost:3000", "http://localhost:1420", "http://tauri.localhost")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+            );   
+        }
 
         app.MapGet("/health", () => Results.Ok("Healthy"));
-        app.MapGet("/api/version", () => Results.Ok("mar24_0551"));
+        app.MapGet("/api/version", () => Results.Ok("mar24_0552"));
             
         app.MapControllers();
 
