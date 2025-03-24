@@ -92,7 +92,6 @@ public class Program
             .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials()
         );
 
         app.MapGet("/health", () => Results.Ok("Healthy"));
