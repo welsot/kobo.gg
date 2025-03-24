@@ -94,13 +94,15 @@ function App() {
     }
 
     try {
-      // Read the file contents using Tauri's fs plugin
-      const fileContent = await readFile(filePath);
-      const fileSize = fileContent.length; // Use the array length as file size
 
       // Update current file being uploaded
       setCurrentFileName(fileName);
       setUploadProgress(0);
+
+      // Read the file contents using Tauri's fs plugin
+      const fileContent = await readFile(filePath);
+      setUploadProgress(1);
+      const fileSize = fileContent.length; // Use the array length as file size
 
       let fileType = determineFileType(fileName);
 
@@ -152,7 +154,7 @@ function App() {
           xhr.send(blob);
         });
       } catch (error) {
-        console.error('Upload failed:', error);
+        console.error('Upload failed:' + JSON.stringify(error));
         throw error;
       }
 
