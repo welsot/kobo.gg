@@ -83,7 +83,7 @@ public class EpubUploadController : ApiController
         }
 
         // Transform filename to safe version
-        string transformedFileName = TransformFileNameForS3(Path.GetFileNameWithoutExtension(fileName), extension);
+        string transformedFileName = FileNameConverter.ConvertToSafeFileName(fileName);
 
         // Get the content type for the file
         string contentType = SupportedFileTypes[extension];
@@ -165,84 +165,5 @@ public class EpubUploadController : ApiController
             return StatusCode(StatusCodes.Status500InternalServerError,
                 new ErrorResponse($"Error processing uploaded file: {ex.Message}"));
         }
-    }
-
-    /// <summary>
-    /// Transforms a filename to be safe for S3 storage by:
-    /// 1. Transliterating non-Latin characters to their Latin equivalents
-    /// 2. Converting to lowercase
-    /// 3. Removing non-alphanumeric characters and replacing with hyphens
-    /// 4. Adding "kobogg-" and a random 3-character code before the extension
-    /// </summary>
-    private string TransformFileNameForS3(string fileName, string extension)
-    {
-        Dictionary<char, string> transliterationMap = Transliteration.GetMap();
-
-        // Convert to lowercase first (important for transliteration lookup)
-        fileName = fileName.ToLowerInvariant();
-
-        // Apply transliteration
-        StringBuilder result = new StringBuilder();
-        foreach (char c in fileName)
-        {
-            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
-            {
-                // ASCII alphanumeric characters pass through unchanged
-                result.Append(c);
-            }
-            else if (transliterationMap.TryGetValue(c, out string? replacement) && replacement != null)
-            {
-                // Use our custom transliteration map
-                result.Append(replacement);
-            }
-            else
-            {
-                // Try standard Unicode normalization to handle other diacritics
-                string normalized = c.ToString().Normalize(NormalizationForm.FormD);
-                bool nonMarkAppended = false;
-
-                foreach (char nc in normalized)
-                {
-                    if (CharUnicodeInfo.GetUnicodeCategory(nc) != UnicodeCategory.NonSpacingMark)
-                    {
-                        if ((nc >= 'a' && nc <= 'z') || (nc >= '0' && nc <= '9'))
-                        {
-                            result.Append(nc);
-                            nonMarkAppended = true;
-                        }
-                        else
-                        {
-                            // Replace any other character with a hyphen
-                            result.Append('-');
-                            nonMarkAppended = true;
-                        }
-                    }
-                }
-
-                // If nothing was appended (completely unsupported character), add a hyphen
-                if (!nonMarkAppended)
-                {
-                    result.Append('-');
-                }
-            }
-        }
-
-        // Replace consecutive hyphens with a single hyphen
-        string sanitized = Regex.Replace(result.ToString(), "-{2,}", "-");
-
-        // Trim any leading or trailing hyphens
-        sanitized = sanitized.Trim('-');
-
-        // If after all sanitization the string is empty, use a fallback
-        if (string.IsNullOrEmpty(sanitized))
-        {
-            sanitized = "unknown-file";
-        }
-
-        // Generate random 3-character code
-        string randomCode = RandomTokenGenerator.GenerateShortUrlCode(3);
-
-        // Return the transformed filename with kobogg prefix and random code
-        return $"{sanitized}-kobogg-{randomCode}{extension}";
     }
 }

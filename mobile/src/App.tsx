@@ -72,7 +72,7 @@ function App() {
 
     const fileName = await tauriPath.basename(filePath);
 
-    const ext = filePath.split('.').pop();
+    const ext = fileName.split('.').pop();
     if (!ext) {
       alert(`File ${fileName} has no extension, please try again`)
       return

@@ -18,18 +18,16 @@ public class EpubConverter(
             
             // Create temp file paths for processing with proper extension
             // Clean the original filename to create a valid filename for the temporary file
-            string safeFileName = Path.GetFileNameWithoutExtension(fileName)
-                .Replace(" ", "-")
-                .Replace(".", "-");
+            string safeFileName = FileNameConverter.ConvertToSafeFileName(fileName);
                 
             // Limit to 50 chars to avoid issues with too long paths
-            if (safeFileName.Length > 50)
-                safeFileName = safeFileName.Substring(0, 50);
+            if (safeFileName.Length > 255)
+                safeFileName = safeFileName.Substring(0, 255);
                 
             // Make sure we don't overwrite existing files by adding a unique suffix
             string uniqueSuffix = DateTime.Now.ToString("yyyyMMddHHmmss");
             string tempInputPath = Path.Combine(Path.GetTempPath(), $"{safeFileName}-{uniqueSuffix}.epub");
-            string tempOutputPath = Path.Combine(Path.GetTempPath(), $"{safeFileName}-{uniqueSuffix}.kepub.epub");
+            string tempOutputPath = Path.Combine(Path.GetTempPath(), $"{safeFileName}-{uniqueSuffix}-kepub.epub");
             
             logger.LogDebug("Using temporary paths - Input: {InputPath}, Output: {OutputPath}", 
                 tempInputPath, tempOutputPath);
@@ -75,13 +73,13 @@ public class EpubConverter(
                 }
                 
                 // Generate new S3 key for the kepub file
-                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
-                if (fileNameWithoutExt.EndsWith(".kepub", StringComparison.OrdinalIgnoreCase))
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(safeFileName);
+                if (fileNameWithoutExt.EndsWith("-kepub", StringComparison.OrdinalIgnoreCase))
                 {
                     fileNameWithoutExt = fileNameWithoutExt.Substring(0, fileNameWithoutExt.Length - 6);
                 }
                 
-                string kepubFileName = $"{fileNameWithoutExt}.kepub.epub";
+                string kepubFileName = $"{fileNameWithoutExt}-kepub.epub";
                 string kepubS3Key = s3Key.Replace(Path.GetFileName(s3Key), kepubFileName);
                 
                 logger.LogDebug("Generated kepub S3 key: {KepubS3Key}", kepubS3Key);
