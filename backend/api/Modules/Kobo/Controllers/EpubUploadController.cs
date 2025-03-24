@@ -149,7 +149,7 @@ public class EpubUploadController : ApiController
             if (extension == ".epub")
             {
                 _logger.LogInformation("Converting EPUB file {FileName} to KEPUB format", pendingBook.FileName);
-                string kepubS3Key = await _epubConverter.ConvertToKepubAsync(pendingBook.S3Key, pendingBook.FileName);
+                string kepubS3Key = await _epubConverter.ConvertToKepubAsync(pendingBook.S3Key);
 
                 // Update the pending book with the KEPUB S3 key
                 await _pendingBookRepository.UpdateKepubS3KeyAsync(pendingBookId, kepubS3Key);

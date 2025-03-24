@@ -99,7 +99,7 @@ public class KepubifyService
             
             // Try to find any .kepub.epub file in the output directory
             string finalOutputDir = Path.GetDirectoryName(outputPath) ?? Path.GetTempPath();
-            var kepubFiles = Directory.GetFiles(finalOutputDir, "*.kepub.epub");
+            var kepubFiles = Directory.GetFiles(finalOutputDir, "*-kepub.epub");
             
             if (kepubFiles.Length > 0)
             {
@@ -108,7 +108,9 @@ public class KepubifyService
             }
             else
             {
-                throw new FileNotFoundException($"Output file was not created at path: {expectedOutputFile}");
+                var tmpFiles = Directory.GetFiles(finalOutputDir);
+                var tmpFilesString = string.Join(", ", tmpFiles);
+                throw new FileNotFoundException($"Output file was not created at path: {expectedOutputFile} or any of the following: {tmpFilesString}");
             }
         }
         
