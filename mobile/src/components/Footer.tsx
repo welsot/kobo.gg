@@ -1,4 +1,11 @@
+import { openUrl } from '@tauri-apps/plugin-opener';
+
 export function Footer() {
+
+    const handleOpen = async (url: string) => {
+        await openUrl(url);
+    };
+
     return (
         <footer className="footer">
             <div className="footer-content">
@@ -9,6 +16,7 @@ export function Footer() {
                         className="footer-link"
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => handleOpen('https://welsot.com')}
                     >
                         Welsot Solutions
                     </a>
@@ -20,6 +28,7 @@ export function Footer() {
                         className="footer-link-subtle"
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => handleOpen('https://github.com/welsot/kobo.gg')}
                     >
                         GitHub
                     </a>

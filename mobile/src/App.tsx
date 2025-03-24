@@ -70,12 +70,24 @@ function App() {
       return
     }
 
+    const fileName = await tauriPath.basename(filePath);
+
+    const ext = filePath.split('.').pop();
+    if (!ext) {
+      alert(`File ${fileName} has no extension, please try again`)
+      return
+    }
+
+    if (!['epub', 'mobi', 'pdf', 'txt', 'cbz', 'cbr'].includes(ext)) {
+      alert(`File ${fileName} has an unsupported extension, please try again, supported extensions are .epub, .mobi, .pdf, .txt, .cbz, .cbr`)
+      return
+    }
+
     try {
       // Read the file contents using Tauri's fs plugin
       const fileContent = await readFile(filePath);
-      const fileName = await tauriPath.basename(filePath);
       const fileSize = fileContent.length; // Use the array length as file size
-      
+
       // Update current file being uploaded
       setCurrentFileName(fileName);
       setUploadProgress(0);
@@ -98,13 +110,13 @@ function App() {
 
       // Create a Blob from the file content
       const blob = new Blob([fileContent], { type: fileType });
-      
+
       // Upload the file with progress tracking
       try {
         // Use XMLHttpRequest to track upload progress
         await new Promise<void>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
-          
+
           // Set up progress tracking
           xhr.upload.addEventListener("progress", (event) => {
             if (event.lengthComputable) {
@@ -112,7 +124,7 @@ function App() {
               setUploadProgress(progress);
             }
           });
-          
+
           xhr.addEventListener("load", () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               resolve();
@@ -120,11 +132,11 @@ function App() {
               reject(new Error(`Upload failed with status: ${xhr.status}`));
             }
           });
-          
+
           xhr.addEventListener("error", () => {
             reject(new Error("Upload failed due to network error"));
           });
-          
+
           xhr.open("PUT", finalUrl);
           xhr.setRequestHeader("Content-Type", fileType);
           xhr.send(blob);
@@ -171,6 +183,12 @@ function App() {
       // Open file dialog
       const selected = await open({
         multiple: true,
+        filters: [
+          {
+            name: 'E-book files',
+            extensions: ['epub', 'mobi', 'pdf', 'txt', 'cbz', 'cbr'],
+          },
+        ],
       });
 
       if (selected === null) {
@@ -190,8 +208,10 @@ function App() {
         }
       }
 
-      // Always navigate to the book list screen after upload
-      navigate('/book-list', { state: { bookBundle } });
+      if (uploadedBooks.length > 0) {
+        navigate('/book-list', { state: { bookBundle } });
+      }
+
     } catch (err) {
       console.error('File selection error:', err);
       setError('Failed to upload one or more files. Please try again. Err: ' + JSON.stringify(err));
@@ -217,7 +237,7 @@ function App() {
           <motion.div
             key={i}
             className="particle"
-            initial={{ 
+            initial={{
               x: Math.random() * window.innerWidth,
               y: Math.random() * window.innerHeight,
               opacity: Math.random() * 0.5 + 0.1
@@ -250,11 +270,11 @@ function App() {
           />
         ))}
       </div>
-      
+
       {/* Header */}
       <Header />
 
-      <motion.div 
+      <motion.div
         className="book-uploader-container"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -267,7 +287,7 @@ function App() {
         >
           Upload Books to Your Kobo
         </motion.h1>
-        
+
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -278,7 +298,7 @@ function App() {
 
         <AnimatePresence>
           {error && (
-            <motion.div 
+            <motion.div
               className="error-message"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -300,8 +320,8 @@ function App() {
           )}
         </AnimatePresence>
 
-        <motion.div 
-          className="upload-area" 
+        <motion.div
+          className="upload-area"
           onClick={handleFileSelect}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -320,8 +340,8 @@ function App() {
               <div className="upload-progress">
                 <span>Uploading {currentFileName}...</span>
                 <div className="progress-bar-container">
-                  <div 
-                    className="progress-bar-fill" 
+                  <div
+                    className="progress-bar-fill"
                     style={{ width: `${uploadProgress}%` }}
                   ></div>
                 </div>
@@ -342,7 +362,7 @@ function App() {
 
         <AnimatePresence>
           {uploadedBooks.length > 0 && (
-            <motion.div 
+            <motion.div
               className="book-summary"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -362,7 +382,7 @@ function App() {
           )}
         </AnimatePresence>
       </motion.div>
-      
+
       {/* Footer */}
       <Footer />
     </div>

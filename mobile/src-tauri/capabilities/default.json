@@ -42,7 +42,8 @@
           ],
           "deny": []
         },
-        "upload:default"
+        "upload:default",
+        "opener:default"
       ],
       "scope": [
         "*"
@@ -50,6 +51,7 @@
     }
   ],
   "permissions": [
-    "upload:default"
+    "upload:default",
+    "opener:default"
   ]
 }
