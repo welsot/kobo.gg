@@ -102,6 +102,40 @@ export default function HowToKobo() {
             </div>
           </section>
 
+          {/* Video Tutorial Section */}
+          <section className="mb-10">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Video Tutorial</h2>
+            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              Prefer to watch? Check out our step-by-step video tutorial that walks you through the entire process:
+            </p>
+            
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 aspect ratio */ }}>
+              <iframe 
+                className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+                src="https://www.youtube.com/embed/kulOB53-5jY?si=40dVIp8UZB98OzBx" 
+                title="How to Transfer eBooks to Your Kobo eReader - Video Tutorial"
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerPolicy="strict-origin-when-cross-origin" 
+                allowFullScreen
+              />
+            </div>
+            
+            <div className="mt-4 text-center">
+              <a 
+                href="https://www.youtube.com/watch?v=kulOB53-5jY" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium"
+              >
+                Watch on YouTube
+                <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </div>
+          </section>
+
           {/* Step-by-step Guide */}
           <section className="mb-10">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Step-by-Step Transfer Process</h2>
