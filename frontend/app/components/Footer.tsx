@@ -1,3 +1,5 @@
+import {Link} from "react-router";
+
 export function Footer() {
   return (
     <footer className="text-center py-6 text-sm text-gray-600">
@@ -24,6 +26,21 @@ export function Footer() {
             GitHub
           </a>
           {' '}&middot;{' '}All rights reserved
+        </p>
+        <p className="text-xs text-gray-400 mt-2">
+          <Link
+            to="/how-to-send-epub-books-to-kobo"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            How to send ePUB books to Kobo
+          </Link>
+          {' '}&middot;{' '}
+          <Link
+            to="/how-to-send-epub-books-to-kindle"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            How to send ePUB books to Kindle
+          </Link>
         </p>
       </div>
     </footer>
