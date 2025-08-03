@@ -22,6 +22,13 @@ public class ApexToolboxMiddleware
         var requestId = context.TraceIdentifier;
         var stopwatch = Stopwatch.StartNew();
         
+        // Skip tracking for health check endpoints
+        if (ShouldSkipTracking(context.Request.Path))
+        {
+            await _next(context);
+            return;
+        }
+        
         _logger.LogInformation("ApexToolbox: Processing request {Method} {Path}", context.Request.Method, context.Request.Path);
         
         // Capture request data
@@ -202,5 +209,16 @@ public class ApexToolboxMiddleware
         }
         
         return false;
+    }
+
+    private bool ShouldSkipTracking(string path)
+    {
+        var pathsToSkip = new[]
+        {
+            "/health",
+        };
+
+        return pathsToSkip.Any(skipPath => 
+            string.Equals(path, skipPath, StringComparison.OrdinalIgnoreCase));
     }
 }
