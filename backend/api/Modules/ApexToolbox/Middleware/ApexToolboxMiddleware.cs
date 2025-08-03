@@ -65,6 +65,11 @@ public class ApexToolboxMiddleware
 
             _logger.LogInformation("ApexToolbox: Captured request data - {Method} {Uri} {StatusCode} Duration: {Duration}s", 
                 httpRequestData.Method, httpRequestData.Uri, httpRequestData.StatusCode, httpRequestData.Duration);
+            
+            // Debug log for headers
+            var userAgent = httpRequestData.Headers.ContainsKey("User-Agent") ? 
+                string.Join(", ", httpRequestData.Headers["User-Agent"]) : "Not found";
+            _logger.LogInformation("ApexToolbox: User-Agent: {UserAgent}, IP: {IpAddress}", userAgent, httpRequestData.IpAddress);
 
             // Send log data asynchronously without blocking the response
             _ = Task.Run(async () =>
@@ -171,7 +176,15 @@ public class ApexToolboxMiddleware
             }
         }
 
-        return context.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+        var remoteIp = context.Connection.RemoteIpAddress?.ToString();
+        
+        // Convert IPv6 localhost to IPv4 localhost for better display
+        if (remoteIp == "::1")
+        {
+            return "127.0.0.1";
+        }
+        
+        return remoteIp ?? "127.0.0.1";
     }
 
     private bool IsPrivateIpAddress(System.Net.IPAddress ipAddress)
