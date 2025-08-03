@@ -15,6 +15,9 @@ public static class ApexToolboxServices
             options.Enabled = !string.IsNullOrEmpty(options.Token);
             options.EndpointUrl = "https://apextoolbox.com/api/v1/logs";
             options.TimeoutSeconds = 1;
+            
+            // Log configuration at startup
+            Console.WriteLine($"ApexToolbox Configuration: Enabled={options.Enabled}, HasToken={!string.IsNullOrEmpty(options.Token)}, Endpoint={options.EndpointUrl}");
         });
 
         // Register HTTP client for ApexToolbox logger

@@ -22,8 +22,13 @@ public class ApexToolboxLogger : IApexToolboxLogger
 
     public async Task SendLogAsync(HttpRequestData requestData, CancellationToken cancellationToken = default)
     {
+        _logger.LogInformation("ApexToolboxLogger: SendLogAsync called. Enabled: {Enabled}, HasToken: {HasToken}", 
+            _settings.Enabled, !string.IsNullOrEmpty(_settings.Token));
+            
         if (!_settings.Enabled || string.IsNullOrEmpty(_settings.Token))
         {
+            _logger.LogWarning("ApexToolboxLogger: Skipping - Enabled: {Enabled}, Token present: {HasToken}", 
+                _settings.Enabled, !string.IsNullOrEmpty(_settings.Token));
             return;
         }
 
@@ -58,13 +63,23 @@ public class ApexToolboxLogger : IApexToolboxLogger
 
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _settings.Token);
 
+            _logger.LogInformation("ApexToolboxLogger: Sending POST to {Url}", _settings.EndpointUrl);
+            
             using var response = await _httpClient.SendAsync(request, cancellationToken);
-            // Silent failure - we don't throw exceptions if the request fails
+            
+            _logger.LogInformation("ApexToolboxLogger: Response received - Status: {StatusCode}", response.StatusCode);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                _logger.LogWarning("ApexToolboxLogger: Non-success response - {StatusCode}: {Content}", 
+                    response.StatusCode, responseContent);
+            }
         }
         catch (Exception ex)
         {
             // Log the error but don't throw - silent failure as per Symfony bundle behavior
-            _logger.LogWarning(ex, "Failed to send log data to ApexToolbox");
+            _logger.LogError(ex, "ApexToolboxLogger: Failed to send log data to ApexToolbox");
         }
     }
 }

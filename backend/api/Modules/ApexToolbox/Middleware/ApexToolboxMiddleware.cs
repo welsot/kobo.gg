@@ -9,16 +9,20 @@ namespace api.Modules.ApexToolbox.Middleware;
 public class ApexToolboxMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ApexToolboxMiddleware> _logger;
 
-    public ApexToolboxMiddleware(RequestDelegate next)
+    public ApexToolboxMiddleware(RequestDelegate next, ILogger<ApexToolboxMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         var requestId = context.TraceIdentifier;
         var stopwatch = Stopwatch.StartNew();
+        
+        _logger.LogInformation("ApexToolbox: Processing request {Method} {Path}", context.Request.Method, context.Request.Path);
         
         // Capture request data
         var requestData = await CaptureRequestDataAsync(context.Request);
@@ -59,17 +63,22 @@ public class ApexToolboxMiddleware
                 Logs = LogBuffer.FlushLogs(requestId)
             };
 
+            _logger.LogInformation("ApexToolbox: Captured request data - {Method} {Uri} {StatusCode} Duration: {Duration}s", 
+                httpRequestData.Method, httpRequestData.Uri, httpRequestData.StatusCode, httpRequestData.Duration);
+
             // Send log data asynchronously without blocking the response
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    var logger = context.RequestServices.GetRequiredService<IApexToolboxLogger>();
-                    await logger.SendLogAsync(httpRequestData);
+                    var apexLogger = context.RequestServices.GetRequiredService<IApexToolboxLogger>();
+                    _logger.LogInformation("ApexToolbox: Sending log data to ApexToolbox");
+                    await apexLogger.SendLogAsync(httpRequestData);
+                    _logger.LogInformation("ApexToolbox: Successfully sent log data");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Silent failure
+                    _logger.LogError(ex, "ApexToolbox: Failed to send log data");
                 }
             });
         }
