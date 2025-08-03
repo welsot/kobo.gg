@@ -9,12 +9,10 @@ namespace api.Modules.ApexToolbox.Middleware;
 public class ApexToolboxMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IApexToolboxLogger _logger;
 
-    public ApexToolboxMiddleware(RequestDelegate next, IApexToolboxLogger logger)
+    public ApexToolboxMiddleware(RequestDelegate next)
     {
         _next = next;
-        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -66,7 +64,8 @@ public class ApexToolboxMiddleware
             {
                 try
                 {
-                    await _logger.SendLogAsync(httpRequestData);
+                    var logger = context.RequestServices.GetRequiredService<IApexToolboxLogger>();
+                    await logger.SendLogAsync(httpRequestData);
                 }
                 catch
                 {
