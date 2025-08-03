@@ -71,12 +71,14 @@ public class ApexToolboxMiddleware
                 string.Join(", ", httpRequestData.Headers["User-Agent"]) : "Not found";
             _logger.LogInformation("ApexToolbox: User-Agent: {UserAgent}, IP: {IpAddress}", userAgent, httpRequestData.IpAddress);
 
+            // Resolve the service before the background task to avoid context disposal issues
+            var apexLogger = context.RequestServices.GetRequiredService<IApexToolboxLogger>();
+            
             // Send log data asynchronously without blocking the response
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    var apexLogger = context.RequestServices.GetRequiredService<IApexToolboxLogger>();
                     _logger.LogInformation("ApexToolbox: Sending log data to ApexToolbox");
                     await apexLogger.SendLogAsync(httpRequestData);
                     _logger.LogInformation("ApexToolbox: Successfully sent log data");
