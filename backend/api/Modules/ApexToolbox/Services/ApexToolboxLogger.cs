@@ -7,17 +7,15 @@ namespace api.Modules.ApexToolbox.Services;
 
 public class ApexToolboxLogger : IApexToolboxLogger
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ApexToolboxSettings _settings;
     private readonly ILogger<ApexToolboxLogger> _logger;
 
-    public ApexToolboxLogger(HttpClient httpClient, IOptions<ApexToolboxSettings> settings, ILogger<ApexToolboxLogger> logger)
+    public ApexToolboxLogger(IHttpClientFactory httpClientFactory, IOptions<ApexToolboxSettings> settings, ILogger<ApexToolboxLogger> logger)
     {
-        _httpClient = httpClient;
+        _httpClientFactory = httpClientFactory;
         _settings = settings.Value;
         _logger = logger;
-        
-        _httpClient.Timeout = TimeSpan.FromSeconds(_settings.TimeoutSeconds);
     }
 
     public async Task SendLogAsync(HttpRequestData requestData, CancellationToken cancellationToken = default)
@@ -34,6 +32,9 @@ public class ApexToolboxLogger : IApexToolboxLogger
 
         try
         {
+            using var httpClient = _httpClientFactory.CreateClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(_settings.TimeoutSeconds);
+            
             var payload = new
             {
                 method = requestData.Method,
@@ -65,7 +66,7 @@ public class ApexToolboxLogger : IApexToolboxLogger
 
             _logger.LogInformation("ApexToolboxLogger: Sending POST to {Url}", _settings.EndpointUrl);
             
-            using var response = await _httpClient.SendAsync(request, cancellationToken);
+            using var response = await httpClient.SendAsync(request, cancellationToken);
             
             _logger.LogInformation("ApexToolboxLogger: Response received - Status: {StatusCode}", response.StatusCode);
             
