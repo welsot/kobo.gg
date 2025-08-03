@@ -1,4 +1,5 @@
 using api.Data;
+using api.Modules.ApexToolbox;
 using api.Modules.Storage;
 using api.Modules.User.Auth;
 
@@ -74,6 +75,7 @@ public class Program
         builder.Services.AddEmailServices(builder.Configuration);
         builder.Services.AddStorageServices(builder.Configuration);
         builder.Services.AddKoboServices();
+        builder.Services.AddApexToolboxServices(builder.Configuration);
 
         var app = builder.Build();
 
@@ -85,6 +87,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseApexToolboxLogging();
         app.UseMiddleware<ApiExceptionMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
