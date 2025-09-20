@@ -51,6 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <Links />
       <script defer data-domain="kobo.gg" src="https://plausible.welsot.com/js/script.tagged-events.js"></script>
       <script async defer data-token="ac139046ae95adce25e537d73e9d75bbaac72f2242d2bfe53b46f219322ae229" src="https://apextoolbox.com/js/analytics.js"></script>
+      <meta name="google-adsense-account" content="ca-pub-3342836679081330"/>
     </head>
     <body>
     {children}
