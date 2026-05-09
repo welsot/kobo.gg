@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html,
+body {
+  @apply bg-white;
+  color-scheme: light;
+}
+
+.form-input input[type='radio'] {
+  margin: 0;
+}
+
+/* Focus styles */
+.form-input input[type='radio']:focus + div {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Hover styles */
+.form-input label:hover div {
+  border-color: #93C5FD;
+}
+
+.form-input select:required:invalid {
+  color: #9CA3AF;
+}
+.form-input option {
+  color: #111827;
+}
+.form-input option[value=""] {
+  color: #9CA3AF;
+}

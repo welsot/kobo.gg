@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AWSSDK.S3" Version="4.0.23" />
+        <PackageReference Include="DotNetEnv" Version="3.2.0" />
+        <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
+        <PackageReference Include="MailKit" Version="4.16.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+        <PackageReference Include="RazorLight" Version="2.3.1" />
+        <PackageReference Include="Testcontainers" Version="4.11.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Migrations\" />
+        <Folder Include="Modules\Email\Templates\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include=".config\dotnet-tools.json" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Update="Resources\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\EmailTemplates\*.cshtml" />
+    </ItemGroup>
+
+</Project>

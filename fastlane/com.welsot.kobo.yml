@@ -1,0 +1,78 @@
+AntiFeatures:
+  - Tracking
+Categories:
+  - Reading
+License: Apache-2.0
+AuthorName: Welsot Solutions
+AuthorEmail: hello@welsot.com
+SourceCode: https://github.com/welsot/kobo.gg
+IssueTracker: https://github.com/welsot/kobo.gg/issues
+Changelog: https://github.com/welsot/kobo.gg/blob/main/mobile/CHANGELOG.md
+
+Name: Kobo.gg - Send books to Kobo/Kindle
+AutoName: Kobo.gg
+Description: |-
+  <p>Kobo.gg is an open-source app that lets you quickly share ebooks from your Android device to your Kobo or Kindle e-reader using short URLs.</p>
+
+  <p><b>Features:</b></p>
+  <ul>
+  <li>Upload ebooks directly from your Android device</li>
+  <li>Support for multiple file formats: EPUB, MOBI, PDF, TXT, CBZ, CBR</li>
+  <li>Get a short, easy-to-type URL to access your books on your e-reader</li>
+  <li>Files automatically expire after 24 hours for privacy</li>
+  <li>Simple, user-friendly interface</li>
+  <li>Free and open-source</li>
+  </ul>
+
+  <p><b>How it works:</b></p>
+  <ol>
+  <li>Select one or more ebook files from your device</li>
+  <li>Upload them with a single tap</li>
+  <li>Get a short URL or code to enter on your Kobo/Kindle e-reader</li>
+  <li>Download the books directly to your e-reader</li>
+  </ol>
+
+  <p>Kobo.gg makes transferring ebooks to your e-reader simple without needing cables or complicated setups. Perfect for when you find a new book on your phone and want to read it on your e-reader right away!</p>
+
+  <p>This app is built with Tauri v2, providing a lightweight and secure experience.</p>
+
+RepoType: git
+Repo: https://github.com/welsot/kobo.gg.git
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: main
+    subdir: mobile
+    sudo:
+      - apt-get update
+      - apt-get install -y curl build-essential libssl-dev pkg-config
+      - curl -Lo node.tar.xz https://nodejs.org/dist/v22.13.1/node-v22.13.1-linux-x64.tar.xz
+      - echo "0d2a5af33c7deab5555c8309cd3f373446fe1526c1b95833935ab3f019733b3b" node.tar.xz
+        | sha256sum -c
+      - tar xJf node.tar.xz
+      - cp -a node-v22.13.1-linux-x64/. /usr/local/
+    init: "export PATH=\"$HOME/.cargo/bin:$PATH\"\nnpm install\n"
+    output: src-tauri/gen/android/app/build/outputs/apk/universalRelease/app-universal-release-unsigned.apk
+    prebuild: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      export PATH="$HOME/.cargo/bin:$PATH"
+      export ANDROID_HOME=/opt/android-sdk
+      export NDK_HOME=/opt/android-sdk/ndk/26.0.10792818
+      rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+      cargo install tauri-cli --version "^2.4.0"
+      rustup show
+      cargo --version
+    scanignore:
+      - mobile/node_modules/
+    build: |
+      export PATH="$HOME/.cargo/bin:$PATH"
+      export ANDROID_HOME=/opt/android-sdk
+      export NDK_HOME=/opt/android-sdk/ndk/26.0.10792818
+      npm run tauri android build -- --apk
+    ndk: r26
+
+AutoUpdateMode: None
+UpdateCheckMode: None
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1
