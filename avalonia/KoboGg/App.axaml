@@ -1,0 +1,89 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:KoboGg"
+             x:Class="KoboGg.App"
+             RequestedThemeVariant="Default">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="KoboAccent">#7C4DFF</Color>
+            <Color x:Key="KoboAccentDark">#5E35D9</Color>
+            <Color x:Key="KoboError">#D32F2F</Color>
+            <Color x:Key="KoboErrorBg">#FFEBEE</Color>
+
+            <SolidColorBrush x:Key="KoboAccentBrush" Color="{StaticResource KoboAccent}" />
+            <SolidColorBrush x:Key="KoboAccentDarkBrush" Color="{StaticResource KoboAccentDark}" />
+            <SolidColorBrush x:Key="KoboErrorBrush" Color="{StaticResource KoboError}" />
+            <SolidColorBrush x:Key="KoboErrorBgBrush" Color="{StaticResource KoboErrorBg}" />
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="SystemAccentColor">#7C4DFF</Color>
+                    <Color x:Key="SystemAccentColorDark1">#5E35D9</Color>
+                    <Color x:Key="SystemAccentColorDark2">#4527A0</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="SystemAccentColor">#9575FF</Color>
+                    <Color x:Key="SystemAccentColorLight1">#B39DFF</Color>
+                    <Color x:Key="SystemAccentColorLight2">#D1C4FF</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource KoboAccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinHeight" Value="52" />
+            <!-- Inter's vertical metrics make a single text line sit optically high; the
+                 1px-larger top padding nudges the content box down so the label reads centered. -->
+            <Setter Property="Padding" Value="20,13,20,11" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource KoboAccentDarkBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource KoboAccentDarkBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="#BDBDBD" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <Style Selector="Button.secondary">
+            <Setter Property="MinHeight" Value="52" />
+            <!-- See Button.primary: top-heavy padding offsets Inter's optical top-shift. -->
+            <Setter Property="Padding" Value="20,13,20,11" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.h1">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style Selector="TextBlock.h2">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.subtitle">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Opacity" Value="0.75" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </Application.Styles>
+</Application>

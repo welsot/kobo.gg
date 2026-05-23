@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:KoboGg.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="780"
+             x:Class="KoboGg.Views.SuccessView"
+             x:DataType="vm:SuccessViewModel">
+
+  <Grid RowDefinitions="*,Auto" Margin="20,24">
+
+    <StackPanel Grid.Row="0" Spacing="20" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+
+      <!-- Check icon -->
+      <Border HorizontalAlignment="Center"
+              Background="{StaticResource KoboAccentBrush}"
+              CornerRadius="48"
+              Width="96" Height="96">
+        <TextBlock Text="✓"
+                   Foreground="White"
+                   FontSize="56"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+      </Border>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Your books are ready"
+                   Classes="h1"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"/>
+        <TextBlock Text="Open kobo.gg on your e-reader and enter the short code."
+                   Classes="subtitle"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"/>
+      </StackPanel>
+
+      <!-- Tap-to-copy code -->
+      <Button Command="{Binding CopyCodeCommand}"
+              Background="Transparent"
+              BorderBrush="{DynamicResource SystemBaseLowColor}"
+              BorderThickness="1"
+              CornerRadius="12"
+              Padding="20,18"
+              HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Stretch">
+        <StackPanel Spacing="6" HorizontalAlignment="Stretch">
+          <TextBlock Text="Short code (tap to copy)"
+                     Classes="subtitle"
+                     FontSize="13"/>
+          <TextBlock Text="{Binding ShortCode}"
+                     FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+                     FontSize="36"
+                     FontWeight="Bold"
+                     Foreground="{StaticResource KoboAccentBrush}"
+                     HorizontalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+
+      <!-- Tap-to-copy URL -->
+      <Button Command="{Binding CopyUrlCommand}"
+              Background="Transparent"
+              BorderBrush="{DynamicResource SystemBaseLowColor}"
+              BorderThickness="1"
+              CornerRadius="12"
+              Padding="20,14"
+              HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Stretch">
+        <StackPanel Spacing="4" HorizontalAlignment="Stretch">
+          <TextBlock Text="Full URL (tap to copy)"
+                     Classes="subtitle"
+                     FontSize="13"/>
+          <TextBlock Text="{Binding ShortUrl}"
+                     FontSize="18"
+                     FontWeight="SemiBold"
+                     HorizontalAlignment="Center"/>
+        </StackPanel>
+      </Button>
+
+      <!-- Toast -->
+      <Border IsVisible="{Binding Toast, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+              Background="#212121"
+              CornerRadius="8"
+              Padding="14,10"
+              HorizontalAlignment="Center">
+        <TextBlock Text="{Binding Toast}" Foreground="White" />
+      </Border>
+    </StackPanel>
+
+    <Button Grid.Row="1"
+            Classes="primary"
+            HorizontalAlignment="Stretch"
+            Margin="0,16,0,0"
+            Command="{Binding SendMoreBooksCommand}"
+            Content="Send more books"/>
+  </Grid>
+</UserControl>

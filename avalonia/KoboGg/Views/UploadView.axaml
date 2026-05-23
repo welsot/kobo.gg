@@ -1,0 +1,136 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:KoboGg.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="780"
+             x:Class="KoboGg.Views.UploadView"
+             x:DataType="vm:UploadViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="20,24">
+
+    <!-- Header -->
+    <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+      <TextBlock Classes="h1" Text="Send books to your Kobo" TextWrapping="Wrap"/>
+      <TextBlock Classes="subtitle"
+                 Text="Pick e-books to upload. We'll give you a short code to open on your e-reader." />
+    </StackPanel>
+
+    <!-- Error banner -->
+    <Border Grid.Row="1" IsVisible="{Binding HasError}"
+            Background="{StaticResource KoboErrorBgBrush}"
+            BorderBrush="{StaticResource KoboErrorBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12,10"
+            Margin="0,0,0,12">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Grid.Column="0"
+                   Text="{Binding ErrorMessage}"
+                   Foreground="{StaticResource KoboErrorBrush}"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Center"/>
+        <Button Grid.Column="1"
+                Command="{Binding DismissErrorCommand}"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="8,4"
+                Content="✕"
+                Foreground="{StaticResource KoboErrorBrush}"
+                VerticalAlignment="Center"/>
+      </Grid>
+    </Border>
+
+    <!-- Items list -->
+    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="12">
+
+        <Border IsVisible="{Binding !HasItems}"
+                Background="{DynamicResource SystemListLowColor}"
+                BorderBrush="{DynamicResource SystemBaseLowColor}"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="20,28"
+                MinHeight="120">
+          <StackPanel Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="No books yet"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Tap “Choose files” to pick books from your device."
+                       Classes="subtitle"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"/>
+          </StackPanel>
+        </Border>
+
+        <ItemsControl ItemsSource="{Binding Items}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:UploadItemViewModel">
+              <Border BorderBrush="{DynamicResource SystemBaseLowColor}"
+                      BorderThickness="1"
+                      CornerRadius="10"
+                      Padding="14,12"
+                      Margin="0,0,0,10">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0"
+                             Text="{Binding FileName}"
+                             FontWeight="SemiBold"
+                             TextTrimming="CharacterEllipsis"/>
+                  <Button Grid.Row="0" Grid.Column="1"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Padding="6"
+                          MinHeight="0"
+                          Command="{Binding $parent[ItemsControl].((vm:UploadViewModel)DataContext).RemoveItemCommand}"
+                          CommandParameter="{Binding}"
+                          Content="✕"/>
+                  <TextBlock Grid.Row="1" Grid.Column="0"
+                             Classes="subtitle"
+                             FontSize="13"
+                             Text="{Binding SizeDisplay}"/>
+
+                  <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        Margin="0,8,0,0"
+                        IsVisible="{Binding IsUploading}">
+                    <ProgressBar Minimum="0" Maximum="1" Value="{Binding Progress}" Height="6"/>
+                  </Grid>
+
+                  <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                             Margin="0,8,0,0"
+                             IsVisible="{Binding IsFailed}"
+                             Foreground="{StaticResource KoboErrorBrush}"
+                             FontSize="13"
+                             TextWrapping="Wrap"
+                             Text="{Binding ErrorMessage}"/>
+
+                  <TextBlock Grid.Row="2" Grid.Column="1"
+                             Margin="0,8,0,0"
+                             IsVisible="{Binding IsUploaded}"
+                             Foreground="{StaticResource KoboAccentBrush}"
+                             FontSize="13"
+                             HorizontalAlignment="Right"
+                             Text="Uploaded"/>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Action buttons -->
+    <StackPanel Grid.Row="3" Spacing="10" Margin="0,16,0,0">
+      <Button Classes="primary"
+              HorizontalAlignment="Stretch"
+              Command="{Binding ChooseFilesCommand}"
+              IsEnabled="{Binding CanPick}"
+              Content="Choose files"/>
+      <Button Classes="secondary"
+              HorizontalAlignment="Stretch"
+              Command="{Binding ContinueCommand}"
+              IsEnabled="{Binding CanContinue}"
+              Content="Continue →"/>
+    </StackPanel>
+  </Grid>
+</UserControl>

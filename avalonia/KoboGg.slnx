@@ -1,0 +1,12 @@
+﻿<Solution>
+  <Project Path="KoboGg.Android/KoboGg.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="KoboGg.Browser/KoboGg.Browser.csproj" />
+  <Project Path="KoboGg.Desktop/KoboGg.Desktop.csproj" />
+  <Project Path="KoboGg.iOS/KoboGg.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="KoboGg/KoboGg.csproj" />
+  <Project Path="KoboGg.Tests/KoboGg.Tests.csproj" />
+</Solution>
