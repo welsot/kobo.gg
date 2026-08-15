@@ -1,6 +1,7 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
 const AD_URL = 'https://pintoteca.com?ref=kobo';
+const AD_URL_NAME = 'Pintoteca.com';
 
 /** Lucide "blocks" icon (https://lucide.dev/icons/blocks), inlined to avoid a dependency for a single glyph. */
 function BlocksIcon({ className }: { className?: string }) {
@@ -63,7 +64,7 @@ export function AdBanner() {
               Learn. Practice. Create.
             </p>
             <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-purple-600 transition-colors group-hover:text-purple-800">
-              PatioDeJuegos.es
+              {AD_URL_NAME}
               <ArrowTopRightOnSquareIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </p>
           </div>
