@@ -1,4 +1,5 @@
 import { BookUploader } from './BookUploader';
+import { AdBanner } from '~/components/AdBanner';
 import { ShortCodeInput } from '~/components/ShortCodeInput';
 
 export function Hero() {
@@ -16,6 +17,8 @@ export function Hero() {
         <ShortCodeInput />
         
         <BookUploader />
+
+        <AdBanner />
       </div>
     </section>
   );
