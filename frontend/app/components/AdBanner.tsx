@@ -1,6 +1,6 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
-const AD_URL = 'https://patiodejuegos.es?ref=kobo';
+const AD_URL = 'https://pintoteca.com?ref=kobo';
 
 /** Lucide "blocks" icon (https://lucide.dev/icons/blocks), inlined to avoid a dependency for a single glyph. */
 function BlocksIcon({ className }: { className?: string }) {
